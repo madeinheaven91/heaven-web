@@ -32,7 +32,7 @@ async fn main() -> std::io::Result<()> {
                         .route("/create", web::post().to(apps::users::handlers::new_user))
                         .route("/fetch", web::get().to(apps::users::handlers::fetch_users))
                         .route("/fetch/{id}", web::get().to(apps::users::handlers::fetch_user))
-                        .route("/update/{id}", web::patch().to(apps::users::handlers::update_user))
+                        .route("/update/{id}", web::put().to(apps::users::handlers::update_user))
                         .route("/delete/{id}", web::get().to(apps::users::handlers::delete_user))
                 )
                 .service(

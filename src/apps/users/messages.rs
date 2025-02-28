@@ -1,4 +1,3 @@
-use crate::db::schema::users::dsl::users;
 use crate::{
     apps::users::insertables::NewUser,
     db::{models::User, pg::DbActor},
@@ -14,7 +13,7 @@ pub struct FetchUsers;
 impl Handler<FetchUsers> for DbActor {
     type Result = QueryResult<Vec<User>>;
 
-    fn handle(&mut self, msg: FetchUsers, _ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, _: FetchUsers, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.0.get().expect("couldn't get db connection from pool");
         users.get_results(&mut conn)
@@ -49,7 +48,7 @@ pub struct CreateUser {
 impl Handler<CreateUser> for DbActor {
     type Result = QueryResult<User>;
 
-    fn handle(&mut self, msg: CreateUser, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: CreateUser, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.0.get().expect("couldn't get db connection from pool");
         let new_user = NewUser {
@@ -77,7 +76,7 @@ pub struct UpdateUser {
 impl Handler<UpdateUser> for DbActor {
     type Result = QueryResult<User>;
 
-    fn handle(&mut self, msg: UpdateUser, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: UpdateUser, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.0.get().expect("couldn't get db connection from pool");
 
@@ -104,7 +103,7 @@ pub struct DeleteUser {
 impl Handler<DeleteUser> for DbActor {
     type Result = QueryResult<User>;
 
-    fn handle(&mut self, msg: DeleteUser, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: DeleteUser, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.0.get().expect("couldn't get db connection from pool");
         diesel::delete(users.find(msg.id)).get_result(&mut conn)

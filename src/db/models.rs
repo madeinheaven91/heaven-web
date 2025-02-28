@@ -5,10 +5,13 @@
 
 
 use crate::db::schema::users;
+use crate::db::schema::posts;
+use crate::db::schema::tags;
 use chrono::DateTime;
 use chrono::offset::Utc;
 use serde::{Serialize, Deserialize};
-#[derive(Queryable, Debug, Serialize, Deserialize)]
+
+#[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
 pub struct Post {
     pub id: i32,
     pub title: String,
@@ -19,7 +22,7 @@ pub struct Post {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-#[derive(Queryable, Debug, Serialize, Deserialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
 pub struct Tag {
     pub id: i32,
     pub name: String,

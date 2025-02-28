@@ -3,7 +3,7 @@ use actix_web::{
     HttpResponse, Responder,
 };
 use serde::Deserialize;
-use crate::db::pg::AppState;
+use crate::{db::pg::AppState, shared::LEXICON};
 use super::messages::{CreateUser, DeleteUser, FetchUser, FetchUsers, UpdateUser};
 
 pub async fn new_user(state: Data<AppState>, body: Json<CreateUser>) -> impl Responder {
@@ -11,7 +11,7 @@ pub async fn new_user(state: Data<AppState>, body: Json<CreateUser>) -> impl Res
     let db = state.db.clone();
     match db.send(user).await {
         Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().json("Something went wrong"),
+        _ => HttpResponse::InternalServerError().json(LEXICON["db_error"]),
     }
 }
 
@@ -19,7 +19,7 @@ pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
     let db = state.db.clone();
     match db.send(FetchUsers).await {
         Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().json("Something went wrong"),
+        _ => HttpResponse::InternalServerError().json(LEXICON["db_error"]),
     }
 }
 
@@ -32,7 +32,7 @@ pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responde
         .await
     {
         Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().json("Something went wrong"),
+        _ => HttpResponse::InternalServerError().json(LEXICON["db_error"]),
     }
 }
 
@@ -55,7 +55,7 @@ pub async fn update_user(state: Data<AppState>, path: Path<i32>, body: Json<Upda
         is_staff: user.is_staff,
     }).await {
         Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().json("Something went wrong"),
+        _ => HttpResponse::InternalServerError().json(LEXICON["db_error"]),
     }
 }
 
@@ -68,6 +68,6 @@ pub async fn delete_user(state: Data<AppState>, path: Path<i32>) -> impl Respond
         .await
     {
         Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().json("Something went wrong"),
+        _ => HttpResponse::InternalServerError().json(LEXICON["db_error"]),
     }
 }
