@@ -5,8 +5,8 @@ CREATE TABLE posts (
   body TEXT NOT NULL,
   author_id INTEGER NOT NULL REFERENCES users(id),
   is_published BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP
 );
 
 CREATE TABLE tags (

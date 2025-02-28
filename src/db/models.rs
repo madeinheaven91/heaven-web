@@ -3,28 +3,28 @@
 #![allow(unused)]
 #![allow(clippy::all)]
 
-
-use crate::db::schema::users;
 use crate::db::schema::posts;
 use crate::db::schema::tags;
-use chrono::DateTime;
+use crate::db::schema::users;
 use chrono::offset::Utc;
-use serde::{Serialize, Deserialize};
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
+#[diesel(table_name = posts)]
 pub struct Post {
-    pub id: i32,
+    pub slug: String,
     pub title: String,
     pub body: String,
     pub author_id: i32,
     pub is_published: bool,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
 }
 
 #[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
 pub struct Tag {
-    pub id: i32,
+    pub slug: String,
     pub name: String,
     pub background_color: Option<String>,
     pub foreground_color: Option<String>,
@@ -38,7 +38,6 @@ pub struct TagsToPost {
 }
 
 #[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
-// #[table_name = "users"]
 pub struct User {
     pub id: i32,
     pub name: String,
@@ -46,4 +45,3 @@ pub struct User {
     pub email: Option<String>,
     pub is_staff: bool,
 }
-

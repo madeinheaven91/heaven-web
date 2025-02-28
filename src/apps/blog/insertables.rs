@@ -1,12 +1,20 @@
 use diesel::Insertable;
-use crate::db::schema::users;
-use serde::Serialize;
+use crate::db::schema::posts;
+use serde::{Deserialize, Serialize};
 
 #[derive(Insertable, Debug, Serialize, Clone)]
-#[diesel(table_name=users)]
-pub struct NewUser {
-    pub name: String,
-    pub password: String,
-    pub email: Option<String>,
-    pub is_staff: bool,
+#[table_name="posts"]
+pub struct NewPost {
+    pub slug: String,
+    pub title: String,
+    pub body: String,
+    pub author_id: i32 
+}
+
+#[derive(AsChangeset, Deserialize)]
+#[table_name = "posts"]
+pub struct PostUpdateForm {
+    pub title: Option<String>,
+    pub body: Option<String>,
+    pub is_published: Option<bool>
 }

@@ -9,8 +9,8 @@ diesel::table! {
         body -> Text,
         author_id -> Int4,
         is_published -> Bool,
-        created_at -> Timestamptz,
-        updated_at -> Nullable<Timestamptz>,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
     }
 }
 

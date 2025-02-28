@@ -38,10 +38,10 @@ pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responde
 
 #[derive(Deserialize)]
 pub struct UpdateUserNoId{
-    name: String,
-    password: String,
+    name: Option<String>,
+    password: Option<String>,
     email: Option<String>,
-    is_staff: bool
+    is_staff: Option<bool>
 }
 
 pub async fn update_user(state: Data<AppState>, path: Path<i32>, body: Json<UpdateUserNoId>) -> impl Responder {

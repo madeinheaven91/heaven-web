@@ -10,7 +10,9 @@ pub struct AppState{
     pub db: Addr<DbActor>
 }
 
-pub struct DbActor(pub Pool<ConnectionManager<PgConnection>>);
+pub struct DbActor{
+    pub pool: Pool<ConnectionManager<PgConnection>>
+}
 
 impl Actor for DbActor {
     type Context = SyncContext<Self>;

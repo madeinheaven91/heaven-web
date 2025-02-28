@@ -11,12 +11,11 @@ pub struct NewUser {
     pub is_staff: bool,
 }
 
-// #[derive(Insertable, Debug, Serialize, Clone)]
-// #[diesel(table_name=users)]
-// pub struct UpdateUser {
-//     pub id: i32,
-//     pub name: String,
-//     pub password: String,
-//     pub email: Option<String>,
-//     pub is_staff: bool,
-// }
+#[derive(AsChangeset)]
+#[table_name = "users"]
+pub struct UserUpdateForm {
+    pub name: Option<String>,
+    pub password: Option<String>,
+    pub email: Option<String>,
+    pub is_staff: Option<bool>,
+}
