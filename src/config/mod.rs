@@ -2,33 +2,27 @@ use std::env;
 
 #[derive(Debug)]
 pub struct Config {
-    pub server: ServerConfig,
-    // pub db: tokio_postgres::Config,
-}
-
-#[derive(Debug)]
-pub struct ServerConfig {
+    // pub server: ServerConfig,
     pub environment: Environment,
     pub ip: String,
     pub port: u16,
+    pub secret_key: String,
+    pub db_url: String
 }
 
+// #[derive(Debug)]
+// pub struct ServerConfig {
+//     pub environment: Environment,
+//     pub ip: String,
+//     pub port: u16,
+//     pub secret_key: String,
+//     pub db_url: String
+// }
+
 impl Config {
-    pub fn init(name: &str) -> Self {
-        let _ = dotenv::from_filename(name);
-        // let mut db = tokio_postgres::Config::new();
-        // db.host(env::var("DB_HOST").unwrap_or(String::from("localhost")))
-        //     .port(
-        //         env::var("DB_PORT")
-        //             .unwrap_or(String::from("5432"))
-        //             .parse()
-        //             .unwrap_or(5432),
-        //     )
-        //     .dbname(env::var("DB_NAME").unwrap_or(String::from("postgres")))
-        //     .user(env::var("DB_USER").unwrap_or(String::from("admin")))
-        //     .password(env::var("DB_PASS").unwrap_or(String::from("123")));
+    pub fn init() -> Self {
         Config {
-            server: ServerConfig {
+            // server: ServerConfig {
                 environment: {
                     match env::var("ENVIRONMENT").unwrap_or_default().as_str() {
                         "prod" => Environment::Production,
@@ -40,12 +34,11 @@ impl Config {
                     .unwrap_or(String::from("8000"))
                     .parse()
                     .unwrap_or(8000),
-            },
-            // db,
-        }
+                secret_key: env::var("SECRET_KEY").unwrap_or_else(|_| panic!("Secret key not set in env")),
+                db_url: env::var("DATABASE_URL").unwrap_or_else(|_| panic!("Database url not set in env")),
+            }
+        // }
     }
-
-    // TODO:
 }
 
 #[derive(Debug)]

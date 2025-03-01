@@ -1,8 +1,9 @@
-use crate::apps::blog::insertables::PostUpdateForm;
+use crate::apps::blog::insertables::PostUpdate;
+use slug::slugify;
 use actix::{Handler, Message};
 use diesel::{QueryDsl, QueryResult, RunQueryDsl};
 use serde::Deserialize;
-use crate::{apps::blog::insertables::NewPost, db::{models::Post, pg::DbActor}, shared::{slugify, LEXICON}};
+use crate::{apps::blog::insertables::NewPost, db::{models::Post, DbActor}, shared::statics::LEXICON};
 
 #[derive(Message, Deserialize)]
 #[rtype(result = "QueryResult<Post>")]
@@ -72,10 +73,11 @@ impl Handler<UpdatePost> for DbActor {
         use crate::db::schema::posts::dsl::*;
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
 
-        let changes = PostUpdateForm {
+        let changes = PostUpdate {
             title: msg.title,
             body: msg.body,
             is_published: msg.is_published,
+            updated_at: chrono::Utc::now().naive_utc()
         };
         diesel::update(posts.find(msg.slug))
             .set(changes)

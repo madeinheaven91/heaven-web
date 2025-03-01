@@ -37,7 +37,7 @@ pub struct TagsToPost {
     pub tag_id: i32,
 }
 
-#[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
+#[derive(Queryable, Identifiable, Debug, Serialize, Deserialize, AsChangeset)]
 pub struct User {
     pub id: i32,
     pub name: String,

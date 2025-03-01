@@ -1,12 +1,18 @@
-use crate::apps::users::insertables::UserUpdateForm;
+use crate::apps::users::insertables::UserUpdate;
+use crate::diesel::RunQueryDsl;
+use crate::diesel::ExpressionMethods;
+use crate::shared::utils::hash_password;
+use crate::shared::utils::verify_password;
 use crate::{
     apps::users::insertables::NewUser,
-    db::{models::User, pg::DbActor},
-    shared::LEXICON,
+    db::{models::User, DbActor},
+    shared::statics::LEXICON,
 };
 use actix::{Handler, Message};
-use diesel::{query_dsl::methods::FindDsl, QueryResult, RunQueryDsl};
+use diesel::{query_dsl::methods::{FindDsl, FilterDsl}, QueryResult};
 use serde::Deserialize;
+
+use super::forms::LoginForm;
 
 #[derive(Message, Deserialize)]
 #[rtype(result = "QueryResult<Vec<User>>")]
@@ -55,7 +61,7 @@ impl Handler<CreateUser> for DbActor {
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
         let new_user = NewUser {
             name: msg.name,
-            password: msg.password,
+            password: hash_password(&msg.password).unwrap(),
             email: msg.email,
             is_staff: msg.is_staff,
         };
@@ -83,7 +89,7 @@ impl Handler<UpdateUser> for DbActor {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
 
-        let changes = UserUpdateForm {
+        let changes = UserUpdate {
             name: msg.name,
             password: msg.password,
             email: msg.email,
@@ -108,5 +114,26 @@ impl Handler<DeleteUser> for DbActor {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
         diesel::delete(users.find(msg.id)).get_result(&mut conn)
+    }
+}
+
+impl Handler<LoginForm> for DbActor {
+    type Result = QueryResult<User>;
+
+    fn handle(&mut self, msg: LoginForm, _ctx: &mut Self::Context) -> Self::Result {
+        use crate::db::schema::users::dsl::*;
+        let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
+        let user = users
+            .filter(name.eq(msg.name)).first::<User>(&mut conn);
+        match user {
+            Ok(user) => {
+                if verify_password(&msg.password, &user.password) {
+                    Ok(user)
+                }else{
+                    Err(diesel::result::Error::NotFound)
+                }
+            }
+            Err(err) => Err(err)
+        }
     }
 }

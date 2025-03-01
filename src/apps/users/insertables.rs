@@ -13,7 +13,7 @@ pub struct NewUser {
 
 #[derive(AsChangeset)]
 #[table_name = "users"]
-pub struct UserUpdateForm {
+pub struct UserUpdate {
     pub name: Option<String>,
     pub password: Option<String>,
     pub email: Option<String>,
