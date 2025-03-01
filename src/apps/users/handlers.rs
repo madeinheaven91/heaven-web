@@ -102,7 +102,7 @@ pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Respond
         Ok(res) => match res {
             Ok(user) => {
                 let token = create_jwt(user.id, user.is_staff);
-                HttpResponse::Ok().body(token)
+                HttpResponse::Ok().append_header(("Authorization", format!("Bearer {}", token).as_str())).finish()
             }
             _ => HttpResponse::Unauthorized().body("Wrong name or password"),
         },
