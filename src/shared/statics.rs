@@ -9,7 +9,8 @@ lazy_static!{
         m.insert("db_error", "An error occured while performing database operation");
         m.insert("db_pool_error", "Couldn't get database connection from pool");
         m.insert("startup", 
-r#" _                                                   _     
+r#"
+ _                                                   _     
 | |                                                 | |    
 | |__   ___  __ ___   _____ _ __ ________      _____| |__  
 | '_ \ / _ \/ _` \ \ / / _ \ '_ \______\ \ /\ / / _ \ '_ \ 

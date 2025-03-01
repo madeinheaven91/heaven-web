@@ -4,7 +4,7 @@ use crate::db::schema::posts;
 use serde::Serialize;
 
 #[derive(Insertable, Debug, Serialize, Clone)]
-#[table_name="posts"]
+#[diesel(table_name=posts)]
 pub struct NewPost {
     pub slug: String,
     pub title: String,
@@ -13,7 +13,7 @@ pub struct NewPost {
 }
 
 #[derive(AsChangeset)]
-#[table_name = "posts"]
+#[diesel(table_name=posts)]
 pub struct PostUpdate {
     pub title: Option<String>,
     pub body: Option<String>,

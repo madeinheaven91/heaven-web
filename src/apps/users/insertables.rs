@@ -12,7 +12,7 @@ pub struct NewUser {
 }
 
 #[derive(AsChangeset)]
-#[table_name = "users"]
+#[diesel(table_name=users)]
 pub struct UserUpdate {
     pub name: Option<String>,
     pub password: Option<String>,
