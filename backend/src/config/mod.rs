@@ -6,7 +6,6 @@ use log::LevelFilter;
 #[derive(Debug)]
 pub struct Config {
     pub environment: Environment,
-    pub ip: String,
     pub port: u16,
     pub secret_key: String,
     pub db_url: String,
@@ -28,7 +27,6 @@ impl Config {
                     },
                 }
             },
-            ip: env::var("SERVER_IP").unwrap_or(String::from("0.0.0.0")),
             port: env::var("SERVER_PORT")
                 .unwrap_or(String::from("8000"))
                 .parse()
@@ -37,9 +35,20 @@ impl Config {
                 .unwrap_or_else(|_| panic!("Secret key not set in env")),
             db_url: env::var("DATABASE_URL")
                 .unwrap_or_else(|_| panic!("Database url not set in env")),
-            log_level: env::var("RUST_LOG").unwrap_or("info".to_string()).parse().unwrap_or(LevelFilter::Info),
-            log_file: env::var("LOG_FILE")
-                .unwrap_or_else(|_| Local::now().format("%Y-%m-%d").to_string()),
+            log_level: env::var("RUST_LOG")
+                .unwrap_or("info".to_string())
+                .parse()
+                .unwrap_or(LevelFilter::Info),
+            log_file: {
+                let env = env::var("LOG_FILE")
+                    .unwrap_or_else(|_| Local::now().format("%Y-%m-%d").to_string());
+                let env = if env.is_empty() {
+                    Local::now().format("%Y-%m-%d").to_string()
+                } else {
+                    env
+                };
+                env
+            },
         }
     }
 }

@@ -10,7 +10,6 @@ use db::{connect, AppState};
 use log::{info, LevelFilter};
 use middlewares::logging::init_logging;
 use shared::statics::{CONFIG, LEXICON};
-use std::env;
 
 mod apps;
 mod config;
@@ -20,7 +19,7 @@ mod shared;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let _ = dotenv::from_filename(env::var("CONFIG").unwrap_or(".env".to_string()));
+    // let _ = dotenv::dotenv();
     let db_addr = connect(CONFIG.db_url.as_str());
     init_logging();
 
@@ -38,12 +37,12 @@ async fn main() -> std::io::Result<()> {
                     .service(apps::blog::service()),
             )
     })
-    .bind((CONFIG.ip.clone(), CONFIG.port))?
+    .bind(("0.0.0.0", CONFIG.port))?
     .workers(3)
     .run();
 
     info!("{}", LEXICON["startup"]);
-    info!("Server running at {}:{}", CONFIG.ip, CONFIG.port);
+    info!("Server running at 0.0.0.0:{}", CONFIG.port);
     info!("Log level: {}", CONFIG.log_level);
     if !matches!(CONFIG.log_level, LevelFilter::Off) {
         info!("Log file: {}.log", CONFIG.log_file);

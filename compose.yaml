@@ -1,14 +1,20 @@
 services:
-  heaven-web:
+  hw-backend:
     container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
       - postgres
     environment:
+      SERVER_PORT: ${SERVER_PORT}
+      ENVIRONMENT: ${ENVIRONMENT}
+      RUST_LOG: ${RUST_LOG}
+      LOG_FILE: ${LOG_FILE}
+      AUTH_ENABLED: ${AUTH_ENABLED}
+      SECRET_KEY: ${SECRET_KEY}
       DATABASE_URL: postgres://${DB_USER}:${DB_PASS}@web-db:${DB_PORT}/${DB_NAME}
 
   postgres:
