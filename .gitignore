@@ -1,4 +1,9 @@
-/target
+*/target
 
-.env
-logs
+*/.env
+*/logs
+
+.backend.env
+.frontend.env
+
+*/dist

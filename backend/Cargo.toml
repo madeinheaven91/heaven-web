@@ -1,5 +1,5 @@
 [package]
-name = "heaven-web"
+name = "hw-backend"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,11 +9,11 @@ actix-cors = "0.7.0"
 actix-web = "4.9.0"
 argon2 = "0.5.3"
 chrono = { version = "0.4.40", features = ["serde"] }
-derive_more = { version = "2.0.1", features = ["full"] }
+# derive_more = { version = "2.0.1", features = ["full"] }
 diesel = { version = "2.2.7", features = ["postgres", "r2d2", "chrono"] }
 dotenv = "0.15.0"
 env_logger = "0.11.6"
-futures = "0.3.31"
+# futures = "0.3.31"
 futures-util = "0.3.31"
 jsonwebtoken = "9.3.1"
 lazy_static = "1.5.0"
