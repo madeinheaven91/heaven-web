@@ -12,12 +12,15 @@ RUN apt-get update && \
 
 # Setup working directory
 WORKDIR /usr/src/hw-backend
+COPY . .
+
+# Caching dependencies
 COPY dummy.rs .
+COPY Cargo.lock .
 COPY Cargo.toml .
 RUN sed -i 's#src/main.rs#dummy.rs#' Cargo.toml
 RUN cargo build --release
 RUN sed -i 's#dummy.rs#src/main.rs#' Cargo.toml
-COPY . .
 
 
 # Install dependency (Required by diesel)
@@ -72,7 +75,7 @@ COPY --from=build /usr/lib/${ARCH}-linux-gnu/* /usr/lib/${ARCH}-linux-gnu/
 COPY --from=build /usr/bin/sh /usr/bin
 COPY --from=build /usr/local/cargo/bin/hw-backend /usr/local/bin/hw-backend
 
-EXPOSE 8000
+EXPOSE ${SERVER_PORT}
 
 ENTRYPOINT ["hw-backend"]
 

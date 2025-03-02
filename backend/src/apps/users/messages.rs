@@ -24,8 +24,7 @@ impl Handler<FetchUsers> for DbActor {
     fn handle(&mut self, _: FetchUsers, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
-        let a = users.get_results(&mut conn);
-        a
+        users.get_results(&mut conn)
     }
 }
 

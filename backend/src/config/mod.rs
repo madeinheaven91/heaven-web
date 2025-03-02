@@ -7,6 +7,7 @@ use log::LevelFilter;
 pub struct Config {
     pub environment: Environment,
     pub port: u16,
+    pub frontend_port: u16,
     pub secret_key: String,
     pub db_url: String,
     pub log_level: LevelFilter,
@@ -31,6 +32,10 @@ impl Config {
                 .unwrap_or(String::from("8000"))
                 .parse()
                 .unwrap_or(8000),
+            frontend_port: env::var("FRONTEND_PORT")
+                .unwrap_or(String::from("3000"))
+                .parse()
+                .unwrap_or(3000),
             secret_key: env::var("SECRET_KEY")
                 .unwrap_or_else(|_| panic!("Secret key not set in env")),
             db_url: env::var("DATABASE_URL")

@@ -1,0 +1,18 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2024"
+
+# Needed for docker caching
+[[bin]]
+name = "hw-frontend"
+path = "src/main.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+chrono = { version = "0.4.40", features = ["serde"] }
+gloo-net = "0.6.0"
+serde = "1.0.218"
+serde_json = "1.0.139"
+wasm-bindgen-futures = "0.4.50"
+yew = { version="0.21", features=["csr"] }

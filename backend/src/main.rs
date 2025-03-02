@@ -2,14 +2,16 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{
-    middleware::Logger,
-    web::Data,
-    App, HttpServer,
+use actix_web::{App, HttpServer, middleware::Logger, web::Data};
+use apistos::{
+    SwaggerUIConfig,
+    app::{BuildConfig, OpenApiWrapper},
+    info::Info,
+    server::Server,
+    spec::Spec,
 };
-use apistos::{app::{BuildConfig, OpenApiWrapper}, info::Info, server::Server, spec::Spec, SwaggerUIConfig};
-use db::{connect, AppState};
-use log::{info, LevelFilter};
+use db::{AppState, connect};
+use log::{LevelFilter, info};
 use middlewares::logging::init_logging;
 use shared::statics::{CONFIG, LEXICON};
 
@@ -25,45 +27,71 @@ async fn main() -> std::io::Result<()> {
     let db_addr = connect(CONFIG.db_url.as_str());
     init_logging();
 
-    let server = HttpServer::new(move || {
-        let spec = Spec {
-            info: Info {
-                title: "A well documented API".to_string(),
-                description: Some(
-                "This is an API documented using Apistos,\na wonderful new tool to document your actix API !".to_string(),
-                ),
+    let server = if matches!(CONFIG.environment, config::Environment::Production) {
+        HttpServer::new(move || {
+            App::new()
+                .app_data(Data::new(AppState {
+                    db: db_addr.clone(),
+                }))
+                .wrap(Logger::new(
+                    "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
+                ))
+                .wrap(
+                    Cors::default().allowed_origin(
+                        format!("http://localhost:{}", CONFIG.frontend_port).as_str(),
+                    ),
+                )
+                .service(
+                    apistos::web::scope("/api/v1")
+                        .service(apps::users::service())
+                        .service(apps::blog::service()),
+                )
+        })
+        .bind(("0.0.0.0", CONFIG.port))?
+        .workers(3)
+        .run()
+    } else {
+        HttpServer::new(move || {
+            let spec = Spec {
+                info: Info {
+                    title: "Heaven web API".to_string(),
+                    description: None,
+                    ..Default::default()
+                },
+                servers: vec![Server {
+                    // url: "/api/v1".to_string(),
+                    url: "/".to_string(),
+                    ..Default::default()
+                }],
                 ..Default::default()
-            },
-            servers: vec![Server {
-                // url: "/api/v1".to_string(),
-                url: "/".to_string(),
-                ..Default::default()
-            }],
-            ..Default::default()
             };
-        App::new()
-            .document(spec)
-            .app_data(Data::new(AppState {
-                db: db_addr.clone(),
-            }))
-            .wrap(Logger::new(
-                "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
-            ))
-            .wrap(Cors::default()
-                .allowed_origin("http://localhost:8080"))
-            .service(
-                apistos::web::scope("/api/v1")
-                    .service(apps::users::service())
-                    .service(apps::blog::service()),
-            )
-            .build_with("/openapi.json",
-                BuildConfig::default()
-                    .with(SwaggerUIConfig::new(&"/swagger")
-            ))
-    })
-    .bind(("0.0.0.0", CONFIG.port))?
-    .workers(3)
-    .run();
+            App::new()
+                .document(spec)
+                .app_data(Data::new(AppState {
+                    db: db_addr.clone(),
+                }))
+                .wrap(Logger::new(
+                    "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
+                ))
+                .wrap(
+                    Cors::default().allowed_origin(
+                        format!("http://localhost:{}", CONFIG.frontend_port).as_str(),
+                    ),
+                )
+                .service(
+                    apistos::web::scope("/api/v1")
+                        .service(apps::users::service())
+                        .service(apps::blog::service()),
+                )
+                .build_with(
+                    "/openapi.json",
+                    BuildConfig::default().with(SwaggerUIConfig::new(&"/swagger")),
+                )
+        })
+        .bind(("0.0.0.0", CONFIG.port))?
+        .workers(3)
+        .run()
+    };
 
     info!("{}", LEXICON["startup"]);
     info!("Server running at 0.0.0.0:{}", CONFIG.port);

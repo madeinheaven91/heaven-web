@@ -1,8 +1,9 @@
 [package]
 name = "hw-backend"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
+# Needed for docker caching
 [[bin]]
 name = "hw-backend"
 path = "src/main.rs"

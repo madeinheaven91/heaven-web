@@ -1,4 +1,21 @@
 services:
+  hw-frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - FRONTEND_PORT=${FRONTEND_PORT}
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    # depends_on:
+    #   - hw-backend
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      BACKEND_HOST: hw-backend
+      BACKEND_PORT: ${SERVER_PORT}
+    restart: unless-stopped
+
   hw-backend:
     container_name: backend
     build:
@@ -16,17 +33,7 @@ services:
       AUTH_ENABLED: ${AUTH_ENABLED}
       SECRET_KEY: ${SECRET_KEY}
       DATABASE_URL: postgres://${DB_USER}:${DB_PASS}@web-db:${DB_PORT}/${DB_NAME}
-
-  # hw-frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-  #   depends_on:
-  #     - hw-backend
-    
+    restart: unless-stopped
 
   postgres:
     container_name: web-db
