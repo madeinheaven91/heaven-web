@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
 use diesel::Insertable;
-use crate::db::schema::posts;
+use crate::db::schema::{posts, tags};
 use serde::Serialize;
 
 #[derive(Insertable, Debug, Serialize, Clone)]
@@ -21,3 +21,19 @@ pub struct PostUpdate {
     pub updated_at: NaiveDateTime
 }
 
+#[derive(Insertable, Debug, Serialize, Clone)]
+#[diesel(table_name=tags)]
+pub struct NewTag {
+    pub slug: String,
+    pub name: String,
+    pub background_color: Option<String>,
+    pub foreground_color: Option<String>,
+}
+
+#[derive(AsChangeset)]
+#[diesel(table_name=tags)]
+pub struct TagUpdate {
+    pub name: Option<String>,
+    pub background_color: Option<String>,
+    pub foreground_color: Option<String>,
+}

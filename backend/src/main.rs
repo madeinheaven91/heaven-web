@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate diesel;
 
+use actix_cors::Cors;
 use actix_web::{
     middleware::Logger,
     web::{self, Data},
@@ -31,6 +32,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::new(
                 "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
             ))
+            .wrap(Cors::default()
+                .allowed_origin("http://localhost:8080"))
             .service(
                 web::scope("/api/v1")
                     .service(apps::users::service())

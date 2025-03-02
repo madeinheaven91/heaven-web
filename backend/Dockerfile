@@ -5,15 +5,22 @@
 # ---------------------------------------------------
 FROM rust:1.85-slim as build
 
-# Setup working directory
-WORKDIR /usr/src/hw-backend
-COPY . .
-
-# Install dependency (Required by diesel)
 RUN apt-get update && \
   apt-get -y upgrade && \
   apt-get -y install libpq-dev && \
   apt-get -y install libpq5
+
+# Setup working directory
+WORKDIR /usr/src/hw-backend
+COPY dummy.rs .
+COPY Cargo.toml .
+RUN sed -i 's#src/main.rs#dummy.rs#' Cargo.toml
+RUN cargo build --release
+RUN sed -i 's#dummy.rs#src/main.rs#' Cargo.toml
+COPY . .
+
+
+# Install dependency (Required by diesel)
 
 # Build application
 

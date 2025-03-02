@@ -5,8 +5,7 @@ use super::{
 use crate::{
     db::AppState,
     shared::{
-        statics::LEXICON,
-        utils::{create_jwt, Claims},
+        statics::LEXICON, utils::{create_jwt, get_and_send_back, Claims}
     },
 };
 use actix_web::{
@@ -15,33 +14,23 @@ use actix_web::{
 };
 
 pub async fn new_user(state: Data<AppState>, body: Json<CreateUser>) -> impl Responder {
-    let user = body.into_inner();
+    let msg = body.into_inner();
     let db = state.db.clone();
-    match db.send(user).await {
-        Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().body(LEXICON["db_error"]),
-    }
+    get_and_send_back(db, msg).await
 }
 
 pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
     let db = state.db.clone();
-    match db.send(FetchUsers).await {
-        Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().body(LEXICON["db_error"]),
-    }
+    let msg = FetchUsers;
+    get_and_send_back(db, msg).await
 }
 
 pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let db = state.db.clone();
-    match db
-        .send(FetchUser {
-            id: path.into_inner(),
-        })
-        .await
-    {
-        Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().body(LEXICON["db_error"]),
-    }
+    let msg = FetchUser {
+        id: path.into_inner()
+    };
+    get_and_send_back(db, msg).await
 }
 
 pub async fn update_user(
@@ -60,19 +49,14 @@ pub async fn update_user(
     };
     let user = body.into_inner();
     let db = state.db.clone();
-    match db
-        .send(UpdateUser {
+    let msg = UpdateUser {
             id,
             name: user.name,
             password: user.password,
             email: user.email,
             is_staff: user.is_staff,
-        })
-        .await
-    {
-        Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().body(LEXICON["db_error"]),
-    }
+        };
+    get_and_send_back(db, msg).await
 }
 
 pub async fn delete_user(
@@ -89,16 +73,16 @@ pub async fn delete_user(
         return HttpResponse::Unauthorized().finish();
     };
     let db = state.db.clone();
-    match db.send(DeleteUser { id }).await {
-        Ok(Ok(res)) => HttpResponse::Ok().json(res),
-        _ => HttpResponse::InternalServerError().body(LEXICON["db_error"]),
-    }
+    let msg = DeleteUser{id};
+    
+    get_and_send_back(db, msg).await
 }
 
 pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Responder {
-    let user = body.into_inner();
     let db = state.db.clone();
-    match db.send(user).await {
+    let msg = body.into_inner();
+
+    match db.send(msg).await {
         Ok(res) => match res {
             Ok(user) => {
                 let token = create_jwt(user.id, user.is_staff);
@@ -106,6 +90,6 @@ pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Respond
             }
             _ => HttpResponse::Unauthorized().body("Wrong name or password"),
         },
-        _ => HttpResponse::InternalServerError().body(LEXICON["db_error"]),
+        _ => HttpResponse::InternalServerError().body(LEXICON["mailbox_error"]),
     }
 }

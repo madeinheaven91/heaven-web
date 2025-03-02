@@ -6,4 +6,4 @@ file = "src/db/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
-dir = "/home/madeinheaven91/Projects/heaven-web/src/db/migrations"
+dir = "/home/madeinheaven91/Projects/heaven-web/backend/src/db/migrations"

@@ -3,6 +3,10 @@ name = "hw-backend"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "hw-backend"
+path = "src/main.rs"
+
 [dependencies]
 actix = "0.13.5"
 actix-cors = "0.7.0"

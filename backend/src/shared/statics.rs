@@ -6,6 +6,7 @@ use crate::config::Config;
 lazy_static!{
     pub static ref LEXICON: HashMap<&'static str, &'static str> = {
         let mut m = HashMap::new();
+        m.insert("mailbox_error", "Mailbox error");
         m.insert("db_error", "An error occured while performing database operation");
         m.insert("db_pool_error", "Couldn't get database connection from pool");
         m.insert("startup", 

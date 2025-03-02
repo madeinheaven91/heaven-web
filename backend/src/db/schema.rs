@@ -21,9 +21,9 @@ diesel::table! {
         #[max_length = 255]
         name -> Varchar,
         #[max_length = 6]
-        background_color -> Nullable<Bpchar>,
+        background_color -> Bpchar,
         #[max_length = 6]
-        foreground_color -> Nullable<Bpchar>,
+        foreground_color -> Bpchar,
     }
 }
 

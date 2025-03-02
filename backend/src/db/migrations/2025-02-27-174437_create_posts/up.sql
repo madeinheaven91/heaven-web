@@ -12,8 +12,8 @@ CREATE TABLE posts (
 CREATE TABLE tags (
   slug VARCHAR(255) PRIMARY KEY UNIQUE,
   name VARCHAR(255) NOT NULL,
-  background_color CHAR(6),
-  foreground_color CHAR(6)
+  background_color CHAR(6) NOT NULL default '000000',
+  foreground_color CHAR(6) NOT NULL default 'ffffff'
 );
 
 CREATE TABLE tags_to_posts (

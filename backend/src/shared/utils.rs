@@ -1,9 +1,14 @@
+use actix::{Addr, Handler, Message};
+use actix_web::HttpResponse;
 use argon2::{password_hash::{self, rand_core::OsRng, SaltString}, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use chrono::{Duration, Utc};
+use diesel::result::Error::NotFound;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Deserialize, Serialize};
 
-use super::statics::CONFIG;
+use crate::db::DbActor;
+
+use super::statics::{CONFIG, LEXICON};
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -38,4 +43,22 @@ pub fn verify_password(password: &str, hashed_password: &str) -> bool {
     Argon2::default()
         .verify_password(password.as_bytes(), &PasswordHash::new(hashed_password).unwrap())
         .is_ok()
+}
+
+pub async fn get_and_send_back<M, T>(db: Addr<DbActor>, msg: M) -> HttpResponse
+where
+    M: Message<Result = Result<T, diesel::result::Error>> + Send + 'static,
+    M::Result: Send + std::fmt::Debug,
+    T: Serialize + Send + 'static,
+    // E: std::fmt::Debug + Send + 'static,
+    DbActor: Handler<M>
+{
+    match db.send(msg).await {
+        Ok(Ok(res)) => HttpResponse::Ok().json(res),
+        Ok(Err(err)) => match err {
+            NotFound => HttpResponse::NotFound().finish(),
+            _ => HttpResponse::InternalServerError().body(format!("{}: {:?}", LEXICON["db_error"], err)),
+        },
+        Err(err) => HttpResponse::InternalServerError().body(format!("{}: {}", LEXICON["mailbox_error"], err)),
+    }
 }

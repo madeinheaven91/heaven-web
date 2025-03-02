@@ -1,6 +1,12 @@
 use serde::Deserialize;
 
 #[derive(Deserialize)]
+pub struct PostCreateForm {
+    pub title: String,
+    pub body: String,
+}
+
+#[derive(Deserialize)]
 pub struct PostUpdateForm {
     pub title: Option<String>,
     pub body: Option<String>,
@@ -8,7 +14,15 @@ pub struct PostUpdateForm {
 }
 
 #[derive(Deserialize)]
-pub struct PostCreateForm {
-    pub title: String,
-    pub body: String,
+pub struct TagCreateForm {
+    pub name: String,
+    pub background_color: Option<String>,
+    pub foreground_color: Option<String>
+}
+
+#[derive(Deserialize)]
+pub struct TagUpdateForm {
+    pub name: Option<String>,
+    pub background_color: Option<String>,
+    pub foreground_color: Option<String>
 }

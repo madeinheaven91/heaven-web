@@ -5,6 +5,7 @@
 
 use crate::db::schema::posts;
 use crate::db::schema::tags;
+use crate::db::schema::tags_to_posts;
 use crate::db::schema::users;
 use chrono::offset::Utc;
 use chrono::NaiveDateTime;
@@ -22,15 +23,17 @@ pub struct Post {
     pub updated_at: Option<NaiveDateTime>,
 }
 
-#[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
+#[derive(Queryable, Insertable, Debug, Serialize, Deserialize, AsChangeset)]
+#[diesel(table_name = tags)]
 pub struct Tag {
     pub slug: String,
     pub name: String,
-    pub background_color: Option<String>,
-    pub foreground_color: Option<String>,
+    pub background_color: String,
+    pub foreground_color: String,
 }
 
 #[derive(Queryable, Debug, Serialize, Deserialize)]
+#[diesel(table_name = tags_to_posts)]
 pub struct TagsToPost {
     pub id: i32,
     pub post_id: i32,
@@ -38,6 +41,7 @@ pub struct TagsToPost {
 }
 
 #[derive(Queryable, Identifiable, Debug, Serialize, Deserialize, AsChangeset)]
+#[diesel(table_name = users)]
 pub struct User {
     pub id: i32,
     pub name: String,
