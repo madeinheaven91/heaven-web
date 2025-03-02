@@ -26,6 +26,10 @@ COPY . .
 
 RUN cargo install --path .
 
+# Debugging purposes
+# ENTRYPOINT [ "cargo", "run" ]
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
+
 # ---------------------------------------------------
 # 2 - Deploy Stage
 #
@@ -36,8 +40,8 @@ RUN cargo install --path .
 
 FROM gcr.io/distroless/cc-debian12
 
-# # Set the architecture argument (arm64, i.e. aarch64 as default)
-# # For amd64, i.e. x86_64, you can append a flag when invoking the build `... --build-arg "ARCH=x86_64"`
+# Set the architecture argument (arm64, i.e. aarch64 as default)
+# For amd64, i.e. x86_64, you can append a flag when invoking the build `... --build-arg "ARCH=x86_64"`
 ARG ARCH=x86_64
 
 # # libpq related (required by diesel)
@@ -67,11 +71,9 @@ COPY --from=build /usr/lib/${ARCH}-linux-gnu/* /usr/lib/${ARCH}-linux-gnu/
 # # Application files
 COPY --from=build /usr/bin/sh /usr/bin
 COPY --from=build /usr/local/cargo/bin/hw-backend /usr/local/bin/hw-backend
-# COPY --from=build /usr/src/hw-backend/.env /.env
 
 EXPOSE 8000
 
 ENTRYPOINT ["hw-backend"]
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 # source: https://www.codefeetime.com/post/docker-config-for-actix-web-diesel-and-postgres/

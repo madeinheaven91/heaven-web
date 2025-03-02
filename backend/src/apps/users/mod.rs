@@ -1,7 +1,5 @@
-use actix_web::{
-    middleware::{from_fn, Condition},
-    web, Scope,
-};
+use actix_web::middleware::{from_fn, Condition};
+use apistos::web::{self, Scope};
 
 use crate::{middlewares::auth::auth_middleware, shared::statics::CONFIG};
 

@@ -1,4 +1,5 @@
 use actix_web::{web::{Data, Json, Path}, HttpMessage, HttpRequest, HttpResponse, Responder};
+use apistos::api_operation;
 
 use crate::{db::AppState, shared::{statics::LEXICON, utils::{Claims, get_and_send_back}}};
 
@@ -8,6 +9,8 @@ use super::{forms::{PostCreateForm, PostUpdateForm, TagCreateForm, TagUpdateForm
 //          Posts            //
 // ------------------------- //
 
+/// Create a post and return it
+#[api_operation(tag = "posts", security_scope(name = "jwt token", scope = "write:posts"))]
 pub async fn create_post(req: HttpRequest, state: Data<AppState>, body: Json<PostCreateForm>) -> impl Responder {
     let form = body.into_inner();
     let db = state.db.clone();
@@ -24,6 +27,8 @@ pub async fn create_post(req: HttpRequest, state: Data<AppState>, body: Json<Pos
     get_and_send_back(db, msg).await
 }
 
+/// Fetch all posts
+#[api_operation(tag = "posts")]
 pub async fn get_posts(state: Data<AppState>) -> impl Responder {
     let db = state.db.clone();
 
@@ -31,6 +36,8 @@ pub async fn get_posts(state: Data<AppState>) -> impl Responder {
     get_and_send_back(db, msg).await
 }
 
+/// Fetch a post by ID
+#[api_operation(tag = "posts")]
 pub async fn get_post(state: Data<AppState>, path: Path<String>) -> impl Responder {
     let slug = path.into_inner();
     let db = state.db.clone();
@@ -39,6 +46,8 @@ pub async fn get_post(state: Data<AppState>, path: Path<String>) -> impl Respond
     get_and_send_back(db, msg).await
 }
 
+/// Update a post by ID
+#[api_operation(tag = "posts", security_scope(name = "jwt token", scope = "write:posts"))]
 pub async fn update_post(req: HttpRequest, state: Data<AppState>, path: Path<String>, body: Json<PostUpdateForm>) -> impl Responder {
     let slug = path.into_inner();
     let form = body.into_inner();
@@ -69,6 +78,8 @@ pub async fn update_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
 }
 
 
+/// Delete a post by ID and return it
+#[api_operation(tag = "posts", security_scope(name = "jwt token", scope = "write:posts"))]
 pub async fn delete_post(req: HttpRequest, state: Data<AppState>, path: Path<String>) -> impl Responder {
     let slug = path.into_inner();
     let db = state.db.clone();
@@ -97,8 +108,8 @@ pub async fn delete_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
 //          Tags             //
 // ------------------------- //
 
-// FIXME: bg color and fg color should be ooptional
-// but right now if you dont provide them, it complains
+/// Create a tag and return it
+#[api_operation(tag = "tags", security_scope(name = "admin jwt token", scope = "write:tags"))]
 pub async fn create_tag(req: HttpRequest, state: Data<AppState>, body: Json<TagCreateForm>) -> impl Responder {
     let form = body.into_inner();
     let db = state.db.clone();
@@ -120,6 +131,8 @@ pub async fn create_tag(req: HttpRequest, state: Data<AppState>, body: Json<TagC
     get_and_send_back(db, msg).await
 }
 
+/// Fetch all tags
+#[api_operation(tag = "tags")]
 pub async fn get_tags(state: Data<AppState>) -> impl Responder {
     let db = state.db.clone();
 
@@ -127,6 +140,8 @@ pub async fn get_tags(state: Data<AppState>) -> impl Responder {
     get_and_send_back(db, msg).await
 }
 
+/// Fetch a tag by ID
+#[api_operation(tag = "tags")]
 pub async fn get_tag(state: Data<AppState>, path: Path<String>) -> impl Responder {
     let slug = path.into_inner();
     let db = state.db.clone();
@@ -135,6 +150,8 @@ pub async fn get_tag(state: Data<AppState>, path: Path<String>) -> impl Responde
     get_and_send_back(db, msg).await
 }
 
+/// Update a tag and return it
+#[api_operation(tag = "tags", security_scope(name = "admin jwt token", scope = "write:tags"))]
 pub async fn update_tag(req: HttpRequest, state: Data<AppState>, path: Path<String>, body: Json<TagUpdateForm>) -> impl Responder {
     let slug = path.into_inner();
     let form = body.into_inner();
@@ -165,6 +182,8 @@ pub async fn update_tag(req: HttpRequest, state: Data<AppState>, path: Path<Stri
 }
 
 
+/// Delete a tag and return it
+#[api_operation(tag = "tags", security_scope(name = "admin jwt token", scope = "write:tags"))]
 pub async fn delete_tag(req: HttpRequest, state: Data<AppState>, path: Path<String>) -> impl Responder {
     let slug = path.into_inner();
     let db = state.db.clone();

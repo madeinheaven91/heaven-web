@@ -1,6 +1,6 @@
 use super::{
-    forms::{LoginForm, UpdateUserForm},
-    messages::{CreateUser, DeleteUser, FetchUser, FetchUsers, UpdateUser},
+    forms::{LoginForm, UpdateUserForm, CreateUser},
+    messages::{DeleteUser, FetchUser, FetchUsers, UpdateUser},
 };
 use crate::{
     db::AppState,
@@ -12,19 +12,26 @@ use actix_web::{
     web::{Data, Json, Path},
     HttpMessage, HttpRequest, HttpResponse, Responder,
 };
+use apistos::api_operation;
 
+/// Create a new user and return it
+#[api_operation(tag = "users")]
 pub async fn new_user(state: Data<AppState>, body: Json<CreateUser>) -> impl Responder {
     let msg = body.into_inner();
     let db = state.db.clone();
     get_and_send_back(db, msg).await
 }
 
+/// Fetch all users
+#[api_operation(tag = "users")]
 pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
     let db = state.db.clone();
     let msg = FetchUsers;
     get_and_send_back(db, msg).await
 }
 
+/// Fetch a user by ID
+#[api_operation(tag = "users")]
 pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let db = state.db.clone();
     let msg = FetchUser {
@@ -33,6 +40,8 @@ pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responde
     get_and_send_back(db, msg).await
 }
 
+/// Update a user and return it
+#[api_operation(tag = "users", security_scope(name = "jwt token", scope = "write:users"))]
 pub async fn update_user(
     req: HttpRequest,
     state: Data<AppState>,
@@ -59,6 +68,8 @@ pub async fn update_user(
     get_and_send_back(db, msg).await
 }
 
+/// Delete a user and return it
+#[api_operation(tag = "users", security_scope(name = "jwt token", scope = "write:users"))]
 pub async fn delete_user(
     req: HttpRequest,
     state: Data<AppState>,
@@ -78,6 +89,9 @@ pub async fn delete_user(
     get_and_send_back(db, msg).await
 }
 
+/// Login
+/// Returns a response with Authorization header
+#[api_operation(tag = "users")]
 pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Responder {
     let db = state.db.clone();
     let msg = body.into_inner();

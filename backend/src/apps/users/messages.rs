@@ -12,7 +12,7 @@ use actix::{Handler, Message};
 use diesel::{query_dsl::methods::{FindDsl, FilterDsl}, QueryResult};
 use serde::Deserialize;
 
-use super::forms::LoginForm;
+use super::forms::{LoginForm, CreateUser};
 
 #[derive(Message, Deserialize)]
 #[rtype(result = "QueryResult<Vec<User>>")]
@@ -24,7 +24,8 @@ impl Handler<FetchUsers> for DbActor {
     fn handle(&mut self, _: FetchUsers, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::users::dsl::*;
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
-        users.get_results(&mut conn)
+        let a = users.get_results(&mut conn);
+        a
     }
 }
 
@@ -44,14 +45,6 @@ impl Handler<FetchUser> for DbActor {
     }
 }
 
-#[derive(Message, Deserialize)]
-#[rtype(result = "QueryResult<User>")]
-pub struct CreateUser {
-    pub name: String,
-    pub password: String,
-    pub email: Option<String>,
-    pub is_staff: bool,
-}
 
 impl Handler<CreateUser> for DbActor {
     type Result = QueryResult<User>;
