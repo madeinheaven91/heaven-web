@@ -6,12 +6,13 @@ use crate::middlewares::auth::auth_middleware;
 mod forms;
 mod handlers;
 mod insertables;
-mod messages;
-mod responses;
+pub mod messages;
+pub mod responses;
 
 pub fn service() -> Scope {
     web::scope("/users")
-        .route("", web::get().to(handlers::fetch_users))
+        .route("/fetch", web::get().to(handlers::fetch_users))
+        .route("/fetch/{id}", web::get().to(handlers::fetch_user))
         .route("", web::post().to(handlers::new_user))
         .route("/login", web::post().to(handlers::login))
         .route("/refresh", web::get().to(handlers::refresh_token))
@@ -22,5 +23,4 @@ pub fn service() -> Scope {
                 .route("/{id}", web::patch().to(handlers::update_user))
                 .route("/{id}", web::delete().to(handlers::delete_user))
         )
-        .route("/{id}", web::get().to(handlers::fetch_user))
 }

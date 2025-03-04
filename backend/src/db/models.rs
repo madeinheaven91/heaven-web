@@ -36,8 +36,8 @@ pub struct Tag {
 #[diesel(table_name = tags_to_posts)]
 pub struct TagsToPost {
     pub id: i32,
-    pub post_id: i32,
-    pub tag_id: i32,
+    pub post: String,
+    pub tag: String,
 }
 
 #[derive(Queryable, Identifiable, Debug, Serialize, Deserialize, AsChangeset)]

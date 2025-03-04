@@ -7,6 +7,7 @@ mod forms;
 mod handlers;
 mod insertables;
 mod messages;
+mod responses;
 
 pub fn service() -> Scope {
     web::scope("/blog")

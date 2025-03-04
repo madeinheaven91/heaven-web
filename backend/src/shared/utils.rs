@@ -55,6 +55,23 @@ pub fn verify_password(password: &str, hashed_password: &str) -> bool {
         .is_ok()
 }
 
+pub async fn get_from_db<M, T>(db: Addr<DbActor>, msg: M) -> Result<T, APIError> 
+where
+    M: Message<Result = Result<T, diesel::result::Error>> + Send + 'static,
+    M::Result: Send + std::fmt::Debug,
+    T: Serialize + Send + 'static,
+    DbActor: Handler<M>
+{
+    match db.send(msg).await {
+        Ok(Ok(res)) => Ok(res),
+        Ok(Err(err)) => Err(match err {
+            NotFound => APIError::NotFound,
+            _ => APIError::DBError
+        }),
+        Err(_) => Err(APIError::MailboxError)
+    }
+}
+
 pub async fn get_and_send_back<M, T>(db: Addr<DbActor>, msg: M) -> HttpResponse
 where
     M: Message<Result = Result<T, diesel::result::Error>> + Send + 'static,

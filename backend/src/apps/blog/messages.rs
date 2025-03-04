@@ -1,7 +1,7 @@
 use crate::apps::blog::insertables::{NewTag, PostUpdate, TagUpdate};
 use slug::slugify;
 use actix::{Handler, Message};
-use diesel::{QueryDsl, QueryResult, RunQueryDsl};
+use diesel::{ExpressionMethods, QueryDsl, QueryResult, RunQueryDsl, Table};
 use serde::Deserialize;
 use crate::{apps::blog::insertables::NewPost, db::{models::{Post, Tag}, DbActor}, shared::statics::LEXICON};
 
@@ -204,3 +204,24 @@ impl Handler<DeleteTag> for DbActor {
         diesel::delete(tags.find(msg.slug)).get_result(&mut conn)
     }
 }
+
+#[derive(Message, Deserialize)]
+#[rtype(result = "QueryResult<Vec<Tag>>")]
+pub struct GetPostTags{
+    pub slug: String
+}
+
+impl Handler<GetPostTags> for DbActor {
+    type Result = QueryResult<Vec<Tag>>;
+    fn handle(&mut self, msg: GetPostTags, _: &mut Self::Context) -> Self::Result {
+        use crate::db::schema::tags::dsl::*;
+        use crate::db::schema::tags_to_posts::dsl::*;
+        let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
+        tags_to_posts
+            .filter(post.eq(msg.slug))
+            .inner_join(tags)
+            .select(tags::all_columns())
+            .load::<Tag>(&mut conn)
+    }
+}
+

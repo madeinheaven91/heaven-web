@@ -11,7 +11,9 @@ pub enum APIError {
     InvalidToken,
     InvalidInput(String),
     MailboxError,
-    Forbidden
+    Forbidden,
+    DBError,
+    NotFound
 }
 
 impl APIError {
@@ -20,7 +22,9 @@ impl APIError {
             Self::MissingToken => HttpResponse::Unauthorized().content_type("text/html").body(self.to_string()),
             Self::InvalidToken => HttpResponse::Unauthorized().content_type("text/html").body(self.to_string()),
             Self::MailboxError => HttpResponse::InternalServerError().content_type("text/html").body(LEXICON["mailbox_error"]),
-            Self::Forbidden => HttpResponse::Forbidden().finish(),
+            Self::Forbidden => HttpResponse::Forbidden().content_type("text/html").body(self.to_string()),
+            Self::DBError => HttpResponse::InternalServerError().content_type("text/html").body(self.to_string()),
+            Self::NotFound => HttpResponse::NotFound().content_type("text/html").body(self.to_string()),
             _ => unimplemented!()
         }
     }
@@ -34,6 +38,8 @@ impl Display for APIError {
             Self::InvalidInput(input) => format!("Invalid input: {}", input),
             Self::MailboxError => "MailboxError".to_string(),
             Self::Forbidden => "Forbidden".to_string(),
+            Self::DBError => "Failed to perform database operation".to_string(),
+            Self::NotFound => "Not found".to_string(),
         };
         write!(f, "{}", res)?;
         Ok(())
