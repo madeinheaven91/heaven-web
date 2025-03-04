@@ -6,15 +6,13 @@ use super::{
 use crate::{
     db::AppState,
     shared::{
-        statics::LEXICON, utils::{create_access_token, create_refresh_token, get_and_send_back, Claims}
+        errors::APIError, statics::CONFIG, utils::{create_access_token, create_refresh_token, get_and_send_back, get_claims, hash_password, verify_jwt}
     },
 };
 use actix_web::{
-    web::{Data, Json, Path},
-    HttpMessage, HttpRequest, HttpResponse, Responder,
+    cookie::Cookie, web::{Data, Json, Path}, HttpRequest, HttpResponse, Responder
 };
 use apistos::api_operation;
-use serde_json::json;
 
 /// Create a new user and return it
 #[api_operation(tag = "users")]
@@ -46,22 +44,23 @@ pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responde
 #[api_operation(tag = "users", security_scope(name = "jwt token", scope = "write:users"))]
 pub async fn update_user(req: HttpRequest, state: Data<AppState>, path: Path<i32>, body: Json<UpdateUserForm>) -> impl Responder {
     let id = path.into_inner();
-    if let Some(claims) = req.extensions().get::<Claims>() {
-        if claims.sub != id && !claims.staff {
-            return HttpResponse::Forbidden().finish();
-        }
-    } else {
-        return HttpResponse::Unauthorized().finish();
-    };
     let user = body.into_inner();
     let db = state.db.clone();
-    let msg = UpdateUser {
-            id,
-            name: user.name,
-            password: user.password,
-            email: user.email,
-            is_staff: user.is_staff,
-        };
+    let msg = match get_claims(req, "access_token").await{
+        Err(err) => return err.to_http(),
+        Ok(claims) => {
+            if claims.sub != id && !claims.staff {
+                return APIError::Forbidden.to_http()
+            };
+            UpdateUser {
+                name: user.name,
+                password: user.password.map(|str| hash_password(&str).unwrap()),
+                id,
+                is_staff: user.is_staff,
+                email: user.email
+            }
+        }
+    };
     get_and_send_back(db, msg).await
 }
 
@@ -69,15 +68,18 @@ pub async fn update_user(req: HttpRequest, state: Data<AppState>, path: Path<i32
 #[api_operation(tag = "users", security_scope(name = "jwt token", scope = "write:users"))]
 pub async fn delete_user(req: HttpRequest, state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let id = path.into_inner();
-    if let Some(claims) = req.extensions().get::<Claims>() {
-        if claims.sub != id && !claims.staff {
-            return HttpResponse::Forbidden().finish();
-        }
-    } else {
-        return HttpResponse::Unauthorized().finish();
-    };
     let db = state.db.clone();
-    let msg = DeleteUser{id};
+    let msg = match get_claims(req, "access_token").await{
+        Err(err) => return err.to_http(),
+        Ok(claims) => {
+            if claims.sub != id && !claims.staff {
+                return APIError::Forbidden.to_http()
+            };
+            DeleteUser {
+                id
+            }
+        }
+    };
     
     get_and_send_back(db, msg).await
 }
@@ -92,45 +94,106 @@ pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Respond
     match db.send(msg).await {
         Ok(res) => match res {
             Ok(user) => {
-                let access = create_access_token(user.id, user.is_staff);
-                let refresh = create_refresh_token(user.id, user.is_staff);
-                // HttpResponse::Ok().append_header(("Authorization", format!("Bearer {}", token).as_str())).finish()
-                HttpResponse::Ok().json(json!({"access": access, "refresh": refresh}))
+                let access_token = create_access_token(user.id, user.is_staff);
+                let refresh_token = create_refresh_token(user.id, user.is_staff);
+                let (access_cookie, refresh_cookie) = match CONFIG.environment.dev() {
+                    true => (
+                        Cookie::build("access_token", access_token)
+                            .http_only(true)
+                            .path("/")
+                            .finish(),
+                        Cookie::build("refresh_token", refresh_token)
+                            .http_only(true)
+                            .path("/")
+                            .finish()
+                    ),
+                    false => (
+                        Cookie::build("access_token", access_token)
+                            .http_only(true)
+                            .path("/")
+                            .secure(true)
+                            .finish(),
+                        Cookie::build("refresh_token", refresh_token)
+                            .http_only(true)
+                            .path("/")
+                            .secure(true)
+                            .finish()
+                    )
+                };
+                HttpResponse::Ok()
+                    .cookie(access_cookie)
+                    .cookie(refresh_cookie)
+                    .content_type("text/html")
+                    .body("Success")
             }
-            _ => HttpResponse::Unauthorized().body("Wrong name or password"),
+            _ => HttpResponse::Unauthorized()
+                    .content_type("text/html")
+                    .body("Wrong name or password"),
         },
-        _ => HttpResponse::InternalServerError().body(LEXICON["mailbox_error"]),
+        _ =>  APIError::MailboxError.to_http()
     }
 }
 
 #[allow(clippy::empty_line_after_outer_attr)]
-// TODO:
 /// Refresh
-// #[api_operation(tag = "users")]
-// pub async fn refresh_token(req: HttpRequest) -> impl Responder {
-//     let token = if let Some(claims) = req.extensions().get::<Claims>() {
-//         json!(claims).to_string()
-//     }else{
-//         return HttpResponse::Unauthorized().finish();
-//     };
-//     match refresh(&token) {
-//         Ok(access) => HttpResponse::Ok().json(json!({"access": access})),
-//         _ => HttpResponse::Unauthorized().finish()
-//     }
-// }
+#[api_operation(tag = "users")]
+pub async fn refresh_token(req: HttpRequest) -> impl Responder {
+    let token = if let Some(cookie) = req.cookie("refresh_token") {
+        cookie.value().to_string()
+    }else{
+        return APIError::MissingToken.to_http()
+    };
+    match verify_jwt(&token) {
+        Ok(claims) => {
+            let claims = claims.claims;
+            let access_token = create_access_token(claims.sub, claims.staff);
+            let refresh_token = create_refresh_token(claims.sub, claims.staff);
+            let (access_cookie, refresh_cookie) = match CONFIG.environment.dev() {
+                true => (
+                    Cookie::build("access_token", access_token)
+                        .http_only(true)
+                        .path("/")
+                        .finish(),
+                    Cookie::build("refresh_token", refresh_token)
+                        .http_only(true)
+                        .path("/")
+                        .finish()
+                ),
+                false => (
+                    Cookie::build("access_token", access_token)
+                        .http_only(true)
+                        .path("/")
+                        .secure(true)
+                        .finish(),
+                    Cookie::build("refresh_token", refresh_token)
+                        .http_only(true)
+                        .path("/")
+                        .secure(true)
+                        .finish()
+                )
+            };
+            HttpResponse::Ok()
+                .cookie(access_cookie)
+                .cookie(refresh_cookie)
+                .content_type("text/html")
+                .body("Success")
+        }
+        _ => HttpResponse::Unauthorized().finish()
+    }
+}
 
 /// Profile
 /// Returns user data extracted from bearer token
 #[api_operation(tag = "users", security_scope(name = "jwt token", scope = "read:users"))]
 pub async fn profile(state: Data<AppState>, req: HttpRequest) -> impl Responder {
-    let msg = if let Some(claims) = req.extensions().get::<Claims>() {
-        FetchUser {
-            id: claims.sub
-        }
-    }else{
-        return HttpResponse::Unauthorized().finish();
-    };
     let db = state.db.clone();
+    let msg = match get_claims(req, "access_token").await{
+        Err(err) => return err.to_http(),
+        Ok(claims) => 
+                FetchUser {
+                    id: claims.sub
+                }
+    };
     get_and_send_back(db, msg).await
 }
 

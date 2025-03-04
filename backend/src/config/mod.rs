@@ -66,6 +66,12 @@ pub enum Environment {
 }
 
 impl Environment {
+    pub fn prod(&self) -> bool {
+        matches!(self, Environment::Production)
+    }
+    pub fn dev(&self) -> bool {
+        matches!(self, Environment::Development)
+    }
     // pub fn auth_enabled(&self) -> bool {
     //     match self {
     //         Environment::Production => true,

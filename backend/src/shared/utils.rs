@@ -1,5 +1,5 @@
 use actix::{Addr, Handler, Message};
-use actix_web::HttpResponse;
+use actix_web::{HttpRequest, HttpResponse};
 use argon2::{password_hash::{self, rand_core::OsRng, SaltString}, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use chrono::{Duration, Utc};
 use diesel::result::Error::NotFound;
@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::db::DbActor;
 
-use super::statics::{CONFIG, LEXICON};
+use super::{errors::APIError, statics::{CONFIG, LEXICON}};
 
 const ACCESS_EXPIRATION: i64 = 15;  // Minutes
 const REFRESH_EXPIRATION: i64 = 7 * 24 * 60;  // 7 days
@@ -42,22 +42,6 @@ pub fn verify_jwt(token: &str) -> Result<TokenData<Claims>, jsonwebtoken::errors
     decode::<Claims>(token, &DecodingKey::from_secret(CONFIG.secret_key.as_bytes()), &validation)
 }
 
-pub fn refresh(token: &str) -> Result<String, jsonwebtoken::errors::Error> {
-    let token_data = decode::<Claims>(
-        token,
-        &DecodingKey::from_secret(CONFIG.secret_key.as_bytes()),
-        &Validation::default(),
-    );
-
-    match token_data {
-        Ok(data) => {
-            let new_access_token = create_access_token(data.claims.sub, data.claims.staff);
-            Ok(format!("\"access_token\": {new_access_token}"))
-        }
-        Err(err) => Err(err)
-    }
-}
-
 pub fn hash_password(password: &str) -> Result<String, password_hash::Error> {
     let salt = SaltString::generate(&mut OsRng);
     let hashed_password = Argon2::default()
@@ -86,5 +70,16 @@ where
             _ => HttpResponse::InternalServerError().body(format!("{}: {:?}", LEXICON["db_error"], err)),
         },
         Err(err) => HttpResponse::InternalServerError().body(format!("{}: {}", LEXICON["mailbox_error"], err)),
+    }
+}
+
+pub async fn get_claims(req: HttpRequest, token: &str) -> Result<Claims, APIError> {
+    if let Some(cookie) = req.cookie(token) {
+        match verify_jwt(cookie.value()) {
+            Err(_) => Err(APIError::InvalidToken),
+            Ok(data) => Ok(data.claims)
+        }
+    }else{
+        Err(APIError::MissingToken)
     }
 }

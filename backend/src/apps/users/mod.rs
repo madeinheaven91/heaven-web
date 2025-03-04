@@ -14,6 +14,7 @@ pub fn service() -> Scope {
         .route("", web::get().to(handlers::fetch_users))
         .route("", web::post().to(handlers::new_user))
         .route("/login", web::post().to(handlers::login))
+        .route("/refresh", web::get().to(handlers::refresh_token))
         .service(
             web::scope("")
                 .wrap(from_fn(auth_middleware))
