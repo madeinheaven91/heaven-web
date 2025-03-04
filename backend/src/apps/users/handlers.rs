@@ -1,3 +1,4 @@
+
 use super::{
     forms::{LoginForm, UpdateUserForm, CreateUser},
     messages::{DeleteUser, FetchUser, FetchUsers, UpdateUser},
@@ -5,7 +6,7 @@ use super::{
 use crate::{
     db::AppState,
     shared::{
-        statics::LEXICON, utils::{create_jwt, get_and_send_back, Claims}
+        statics::LEXICON, utils::{create_access_token, create_refresh_token, get_and_send_back, Claims}
     },
 };
 use actix_web::{
@@ -13,6 +14,7 @@ use actix_web::{
     HttpMessage, HttpRequest, HttpResponse, Responder,
 };
 use apistos::api_operation;
+use serde_json::json;
 
 /// Create a new user and return it
 #[api_operation(tag = "users")]
@@ -42,12 +44,7 @@ pub async fn fetch_user(state: Data<AppState>, path: Path<i32>) -> impl Responde
 
 /// Update a user and return it
 #[api_operation(tag = "users", security_scope(name = "jwt token", scope = "write:users"))]
-pub async fn update_user(
-    req: HttpRequest,
-    state: Data<AppState>,
-    path: Path<i32>,
-    body: Json<UpdateUserForm>,
-) -> impl Responder {
+pub async fn update_user(req: HttpRequest, state: Data<AppState>, path: Path<i32>, body: Json<UpdateUserForm>) -> impl Responder {
     let id = path.into_inner();
     if let Some(claims) = req.extensions().get::<Claims>() {
         if claims.sub != id && !claims.staff {
@@ -70,11 +67,7 @@ pub async fn update_user(
 
 /// Delete a user and return it
 #[api_operation(tag = "users", security_scope(name = "jwt token", scope = "write:users"))]
-pub async fn delete_user(
-    req: HttpRequest,
-    state: Data<AppState>,
-    path: Path<i32>,
-) -> impl Responder {
+pub async fn delete_user(req: HttpRequest, state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let id = path.into_inner();
     if let Some(claims) = req.extensions().get::<Claims>() {
         if claims.sub != id && !claims.staff {
@@ -90,7 +83,7 @@ pub async fn delete_user(
 }
 
 /// Login
-/// Returns a response with Authorization header
+/// Returns a response with Access and Refresh tokens
 #[api_operation(tag = "users")]
 pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Responder {
     let db = state.db.clone();
@@ -99,11 +92,45 @@ pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Respond
     match db.send(msg).await {
         Ok(res) => match res {
             Ok(user) => {
-                let token = create_jwt(user.id, user.is_staff);
-                HttpResponse::Ok().append_header(("Authorization", format!("Bearer {}", token).as_str())).finish()
+                let access = create_access_token(user.id, user.is_staff);
+                let refresh = create_refresh_token(user.id, user.is_staff);
+                // HttpResponse::Ok().append_header(("Authorization", format!("Bearer {}", token).as_str())).finish()
+                HttpResponse::Ok().json(json!({"access": access, "refresh": refresh}))
             }
             _ => HttpResponse::Unauthorized().body("Wrong name or password"),
         },
         _ => HttpResponse::InternalServerError().body(LEXICON["mailbox_error"]),
     }
 }
+
+#[allow(clippy::empty_line_after_outer_attr)]
+// TODO:
+/// Refresh
+// #[api_operation(tag = "users")]
+// pub async fn refresh_token(req: HttpRequest) -> impl Responder {
+//     let token = if let Some(claims) = req.extensions().get::<Claims>() {
+//         json!(claims).to_string()
+//     }else{
+//         return HttpResponse::Unauthorized().finish();
+//     };
+//     match refresh(&token) {
+//         Ok(access) => HttpResponse::Ok().json(json!({"access": access})),
+//         _ => HttpResponse::Unauthorized().finish()
+//     }
+// }
+
+/// Profile
+/// Returns user data extracted from bearer token
+#[api_operation(tag = "users", security_scope(name = "jwt token", scope = "read:users"))]
+pub async fn profile(state: Data<AppState>, req: HttpRequest) -> impl Responder {
+    let msg = if let Some(claims) = req.extensions().get::<Claims>() {
+        FetchUser {
+            id: claims.sub
+        }
+    }else{
+        return HttpResponse::Unauthorized().finish();
+    };
+    let db = state.db.clone();
+    get_and_send_back(db, msg).await
+}
+

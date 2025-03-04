@@ -10,26 +10,52 @@ use crate::db::DbActor;
 
 use super::statics::{CONFIG, LEXICON};
 
+const ACCESS_EXPIRATION: i64 = 15;  // Minutes
+const REFRESH_EXPIRATION: i64 = 7 * 24 * 60;  // 7 days
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Claims{
     pub sub: i32,
     pub exp: i64,
     pub staff: bool
 }
 
-pub fn create_jwt(sub: i32, staff: bool) -> String {
+fn create_jwt(sub: i32, staff: bool, expiration_minutes: i64) -> String {
     let payload = Claims {
         sub,
-        exp: (Utc::now() + Duration::hours(1)).timestamp(),
+        exp: (Utc::now() + Duration::minutes(expiration_minutes)).timestamp(),
         staff
     };
     encode(&Header::new(jsonwebtoken::Algorithm::HS512), &payload, &EncodingKey::from_secret(CONFIG.secret_key.as_bytes())).unwrap()
 }
 
+pub fn create_access_token(sub: i32, staff: bool) -> String {
+    create_jwt(sub, staff, ACCESS_EXPIRATION)
+}
+
+pub fn create_refresh_token(sub: i32, staff: bool) -> String {
+    create_jwt(sub, staff, REFRESH_EXPIRATION)
+}
+
 pub fn verify_jwt(token: &str) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
     let validation = Validation::new(jsonwebtoken::Algorithm::HS512);
     decode::<Claims>(token, &DecodingKey::from_secret(CONFIG.secret_key.as_bytes()), &validation)
+}
+
+pub fn refresh(token: &str) -> Result<String, jsonwebtoken::errors::Error> {
+    let token_data = decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(CONFIG.secret_key.as_bytes()),
+        &Validation::default(),
+    );
+
+    match token_data {
+        Ok(data) => {
+            let new_access_token = create_access_token(data.claims.sub, data.claims.staff);
+            Ok(format!("\"access_token\": {new_access_token}"))
+        }
+        Err(err) => Err(err)
+    }
 }
 
 pub fn hash_password(password: &str) -> Result<String, password_hash::Error> {

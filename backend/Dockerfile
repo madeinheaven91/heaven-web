@@ -7,27 +7,30 @@ FROM rust:1.85-slim as build
 
 RUN apt-get update && \
   apt-get -y upgrade && \
-  apt-get -y install libpq-dev && \
-  apt-get -y install libpq5
+  apt-get -y install libpq-dev
 
 # Setup working directory
 WORKDIR /usr/src/hw-backend
-COPY . .
 
-# Caching dependencies
-COPY dummy.rs .
-COPY Cargo.lock .
-COPY Cargo.toml .
+# We'll get to what this file is below!
+COPY dummy.rs /usr/src/hw-backend
+# If this changed likely the Cargo.toml changed so lets trigger the
+# recopying of it anyways
+COPY Cargo.lock /usr/src/hw-backend
+COPY Cargo.toml /usr/src/hw-backend
+# We'll get to what this substitution is for but replace main.rs with
+# lib.rs if this is a library
 RUN sed -i 's#src/main.rs#dummy.rs#' Cargo.toml
+# Drop release if you want debug builds. This step cache's our deps!
 RUN cargo build --release
+# Now return the file back to normal
 RUN sed -i 's#dummy.rs#src/main.rs#' Cargo.toml
-
-
-# Install dependency (Required by diesel)
+# Copy the rest of the files into the container
+COPY . /usr/src/hw-backend
+# Now this only builds our changes to things like src
 
 # Build application
-
-RUN cargo install --path .
+RUN cargo build --release
 
 # Debugging purposes
 # ENTRYPOINT [ "cargo", "run" ]
@@ -73,7 +76,8 @@ COPY --from=build /usr/lib/${ARCH}-linux-gnu/* /usr/lib/${ARCH}-linux-gnu/
 
 # # Application files
 COPY --from=build /usr/bin/sh /usr/bin
-COPY --from=build /usr/local/cargo/bin/hw-backend /usr/local/bin/hw-backend
+# COPY --from=build /usr/local/cargo/bin/hw-backend /usr/local/bin/hw-backend
+COPY --from=build /usr/src/hw-backend/target/release/hw-backend /usr/local/bin/hw-backend
 
 EXPOSE ${SERVER_PORT}
 

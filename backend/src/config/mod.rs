@@ -20,12 +20,13 @@ impl Config {
             environment: {
                 match env::var("ENVIRONMENT").unwrap_or_default().as_str() {
                     "prod" => Environment::Production,
-                    _ => Environment::Development {
-                        auth_enabled: env::var("AUTH_ENABLED")
-                            .unwrap_or(String::from("true"))
-                            .parse()
-                            .unwrap_or(false),
-                    },
+                    _ => Environment::Development 
+                    // {
+                    //     auth_enabled: env::var("AUTH_ENABLED")
+                    //         .unwrap_or(String::from("true"))
+                    //         .parse()
+                    //         .unwrap_or(true),
+                    // },
                 }
             },
             port: env::var("SERVER_PORT")
@@ -60,15 +61,15 @@ impl Config {
 
 #[derive(Debug)]
 pub enum Environment {
-    Development { auth_enabled: bool },
+    Development,
     Production,
 }
 
 impl Environment {
-    pub fn auth_enabled(&self) -> bool {
-        match self {
-            Environment::Production => true,
-            Environment::Development { auth_enabled, .. } => *auth_enabled,
-        }
-    }
+    // pub fn auth_enabled(&self) -> bool {
+    //     match self {
+    //         Environment::Production => true,
+    //         Environment::Development { auth_enabled, .. } => *auth_enabled,
+    //     }
+    // }
 }

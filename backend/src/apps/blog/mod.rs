@@ -1,6 +1,6 @@
-use actix_web::middleware::{from_fn, Condition};
+use actix_web::middleware::from_fn;
 
-use crate::{middlewares::auth::auth_middleware, shared::statics::CONFIG};
+use crate::middlewares::auth::auth_middleware;
 use apistos::web::{self, Scope};
 
 mod forms;
@@ -9,8 +9,6 @@ mod insertables;
 mod messages;
 
 pub fn service() -> Scope {
-    let protected = CONFIG.environment.auth_enabled();
-
     web::scope("/blog")
         .service(
             web::scope("/posts")
@@ -18,7 +16,7 @@ pub fn service() -> Scope {
                 .route("/{slug}", web::get().to(handlers::get_post))
                 .service(
                     web::scope("")
-                        .wrap(Condition::new(protected, from_fn(auth_middleware)))
+                        .wrap(from_fn(auth_middleware))
                         .route("", web::post().to(handlers::create_post))
                         .route("/{slug}", web::patch().to(handlers::update_post))
                         .route("/{slug}", web::delete().to(handlers::delete_post)),
@@ -30,7 +28,7 @@ pub fn service() -> Scope {
                 .route("/{slug}", web::get().to(handlers::get_tag))
                 .service(
                     web::scope("")
-                        .wrap(Condition::new(protected, from_fn(auth_middleware)))
+                        .wrap(from_fn(auth_middleware))
                         .route("", web::post().to(handlers::create_tag))
                         .route("/{slug}", web::patch().to(handlers::update_tag))
                         .route("/{slug}", web::delete().to(handlers::delete_tag)),

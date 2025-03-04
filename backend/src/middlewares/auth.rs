@@ -1,17 +1,14 @@
 use actix_web::{
     body::MessageBody,
     dev::{ServiceRequest, ServiceResponse},
-    http::header,
+    http::header::{self},
     middleware::Next,
     Error, HttpMessage,
 };
 
 use crate::shared::utils::verify_jwt;
 
-pub async fn auth_middleware(
-    req: ServiceRequest,
-    next: Next<impl MessageBody>,
-) -> Result<ServiceResponse<impl MessageBody>, Error> {
+pub async fn auth_middleware(req: ServiceRequest, next: Next<impl MessageBody>) -> Result<ServiceResponse<impl MessageBody>, Error> {
     // Check authorization token
     if let Some(auth_header) = req.headers().get(header::AUTHORIZATION) {
         if let Ok(auth_str) = auth_header.to_str() {

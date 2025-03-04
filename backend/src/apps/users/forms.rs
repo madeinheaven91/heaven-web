@@ -1,4 +1,4 @@
-use crate::db::models::User;
+use crate::apps::users::responses::UserPublic;
 use apistos::ApiComponent;
 use diesel::QueryResult;
 use schemars::JsonSchema;
@@ -15,14 +15,14 @@ pub struct UpdateUserForm{
 }
 
 #[derive(Message, Deserialize, JsonSchema, ApiComponent)]
-#[rtype(result = "QueryResult<User>")]
+#[rtype(result = "QueryResult<UserPublic>")]
 pub struct LoginForm {
     pub name: String,
     pub password: String,
 }
 
 #[derive(Message, Deserialize, JsonSchema, ApiComponent)]
-#[rtype(result = "QueryResult<User>")]
+#[rtype(result = "QueryResult<UserPublic>")]
 pub struct CreateUser {
     pub name: String,
     pub password: String,
