@@ -76,7 +76,6 @@ COPY --from=build /usr/lib/${ARCH}-linux-gnu/* /usr/lib/${ARCH}-linux-gnu/
 
 # # Application files
 COPY --from=build /usr/bin/sh /usr/bin
-# COPY --from=build /usr/local/cargo/bin/hw-backend /usr/local/bin/hw-backend
 COPY --from=build /usr/src/hw-backend/target/release/hw-backend /usr/local/bin/hw-backend
 
 EXPOSE ${SERVER_PORT}

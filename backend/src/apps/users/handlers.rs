@@ -11,8 +11,8 @@ use crate::{
 };
 use actix_web::{
     cookie::Cookie, web::{Data, Json, Path}, HttpRequest, HttpResponse, Responder
-};
-use apistos::api_operation;
+}; use apistos::api_operation;
+use serde_json::json;
 
 /// Create a new user and return it
 #[api_operation(tag = "users")]
@@ -97,25 +97,28 @@ pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Respond
                 let access_token = create_access_token(user.id, user.is_staff);
                 let refresh_token = create_refresh_token(user.id, user.is_staff);
                 let (access_cookie, refresh_cookie) = match CONFIG.environment.dev() {
-                    true => (
-                        Cookie::build("access_token", access_token)
+                    true => ( Cookie::build("access_token", &access_token)
                             .http_only(true)
                             .path("/")
+                            .same_site(actix_web::cookie::SameSite::None)
                             .finish(),
-                        Cookie::build("refresh_token", refresh_token)
+                        Cookie::build("refresh_token", &refresh_token)
                             .http_only(true)
                             .path("/")
+                            .same_site(actix_web::cookie::SameSite::None)
                             .finish()
                     ),
                     false => (
-                        Cookie::build("access_token", access_token)
+                        Cookie::build("access_token", &access_token)
                             .http_only(true)
                             .path("/")
+                            .same_site(actix_web::cookie::SameSite::None)
                             .secure(true)
                             .finish(),
-                        Cookie::build("refresh_token", refresh_token)
+                        Cookie::build("refresh_token", &refresh_token)
                             .http_only(true)
                             .path("/")
+                            .same_site(actix_web::cookie::SameSite::None)
                             .secure(true)
                             .finish()
                     )
@@ -123,8 +126,10 @@ pub async fn login(state: Data<AppState>, body: Json<LoginForm>) -> impl Respond
                 HttpResponse::Ok()
                     .cookie(access_cookie)
                     .cookie(refresh_cookie)
-                    .content_type("text/html")
-                    .body("Success")
+                    .json(json!({
+                        "access_token": access_token,
+                        "refresh_token": refresh_token
+                    }))
             }
             _ => HttpResponse::Unauthorized()
                     .content_type("text/html")
@@ -149,25 +154,28 @@ pub async fn refresh_token(req: HttpRequest) -> impl Responder {
             let access_token = create_access_token(claims.sub, claims.staff);
             let refresh_token = create_refresh_token(claims.sub, claims.staff);
             let (access_cookie, refresh_cookie) = match CONFIG.environment.dev() {
-                true => (
-                    Cookie::build("access_token", access_token)
+                true => ( Cookie::build("access_token", &access_token)
                         .http_only(true)
                         .path("/")
+                        .same_site(actix_web::cookie::SameSite::None)
                         .finish(),
-                    Cookie::build("refresh_token", refresh_token)
+                    Cookie::build("refresh_token", &refresh_token)
                         .http_only(true)
                         .path("/")
+                        .same_site(actix_web::cookie::SameSite::None)
                         .finish()
                 ),
                 false => (
-                    Cookie::build("access_token", access_token)
+                    Cookie::build("access_token", &access_token)
                         .http_only(true)
                         .path("/")
+                        .same_site(actix_web::cookie::SameSite::None)
                         .secure(true)
                         .finish(),
-                    Cookie::build("refresh_token", refresh_token)
+                    Cookie::build("refresh_token", &refresh_token)
                         .http_only(true)
                         .path("/")
+                        .same_site(actix_web::cookie::SameSite::None)
                         .secure(true)
                         .finish()
                 )
@@ -175,8 +183,10 @@ pub async fn refresh_token(req: HttpRequest) -> impl Responder {
             HttpResponse::Ok()
                 .cookie(access_cookie)
                 .cookie(refresh_cookie)
-                .content_type("text/html")
-                .body("Success")
+                .json(json!({
+                    "access_token": access_token,
+                    "refresh_token": refresh_token
+                }))
         }
         _ => HttpResponse::Unauthorized().finish()
     }

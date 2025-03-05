@@ -2,16 +2,12 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{App, HttpServer, middleware::Logger, web::Data};
+use actix_web::{middleware::{DefaultHeaders, Logger}, web::Data, App, HttpResponse, HttpServer};
 use apistos::{
-    SwaggerUIConfig,
-    app::{BuildConfig, OpenApiWrapper},
-    info::Info,
-    server::Server,
-    spec::Spec,
+    app::{BuildConfig, OpenApiWrapper}, info::Info, server::Server, spec::Spec, web, SwaggerUIConfig
 };
 use db::{AppState, connect};
-use log::{LevelFilter, info};
+use log::{debug, info, LevelFilter};
 use middlewares::logging::init_logging;
 use shared::statics::{CONFIG, LEXICON};
 
@@ -27,31 +23,7 @@ async fn main() -> std::io::Result<()> {
     let db_addr = connect(CONFIG.db_url.as_str());
     init_logging();
 
-    let server = if matches!(CONFIG.environment, config::Environment::Production) {
-        HttpServer::new(move || {
-            App::new()
-                .app_data(Data::new(AppState {
-                    db: db_addr.clone(),
-                }))
-                .wrap(Logger::new(
-                    "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
-                ))
-                .wrap(
-                    Cors::default().allowed_origin(
-                        format!("http://localhost:{}", CONFIG.frontend_port).as_str(),
-                    ),
-                )
-                .service(
-                    apistos::web::scope("/api/v1")
-                        .service(apps::users::service())
-                        .service(apps::blog::service()),
-                )
-        })
-        .bind(("0.0.0.0", CONFIG.port))?
-        .workers(3)
-        .run()
-    } else {
-        HttpServer::new(move || {
+    let server = HttpServer::new(move || {
             let spec = Spec {
                 info: Info {
                     title: "Heaven web API".to_string(),
@@ -59,12 +31,25 @@ async fn main() -> std::io::Result<()> {
                     ..Default::default()
                 },
                 servers: vec![Server {
-                    // url: "/api/v1".to_string(),
                     url: "/".to_string(),
                     ..Default::default()
                 }],
                 ..Default::default()
             };
+            let build_config = match CONFIG.environment.prod() {
+                true => BuildConfig::default().with(SwaggerUIConfig::new(&"/swagger")),
+                false => BuildConfig::default(),
+            };
+            let cors = Cors::default()
+                .allow_any_method()
+                .allowed_origin_fn(|header, _| {
+                    header.to_str().unwrap().starts_with("http://localhost")
+                })
+                .allow_any_header()
+                .supports_credentials()
+                .max_age(3600)
+                .expose_any_header();
+
             App::new()
                 .document(spec)
                 .app_data(Data::new(AppState {
@@ -73,25 +58,17 @@ async fn main() -> std::io::Result<()> {
                 .wrap(Logger::new(
                     "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
                 ))
-                .wrap(
-                    Cors::default().allowed_origin(
-                        format!("http://localhost:{}", CONFIG.frontend_port).as_str(),
-                    ),
-                )
+                .wrap(cors)
                 .service(
                     apistos::web::scope("/api/v1")
                         .service(apps::users::service())
                         .service(apps::blog::service()),
                 )
-                .build_with(
-                    "/openapi.json",
-                    BuildConfig::default().with(SwaggerUIConfig::new(&"/swagger")),
-                )
+                .build_with("/openapi.json", build_config)
         })
         .bind(("0.0.0.0", CONFIG.port))?
         .workers(3)
-        .run()
-    };
+        .run();
 
     info!("{}", LEXICON["startup"]);
     info!("Server running at 0.0.0.0:{}", CONFIG.port);
@@ -100,6 +77,18 @@ async fn main() -> std::io::Result<()> {
         info!("Log file: {}.log", CONFIG.log_file);
     }
     info!("Environment: {}", format!("{:?}", CONFIG.environment));
+            let cors = Cors::default()
+                .allowed_origin_fn(|origin, _req| {
+                    origin.to_str().unwrap().starts_with("http://localhost")
+                })
+                .allow_any_origin()
+                .allow_any_header()
+                .expose_any_header()
+                .allow_any_method()
+                .supports_credentials()
+                .max_age(3600)
+            ;
+    debug!("Cors: {:?}", cors);
 
     let res = server.await;
 
