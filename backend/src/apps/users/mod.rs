@@ -15,6 +15,7 @@ pub fn service() -> Scope {
         .route("/fetch/{id}", web::get().to(handlers::fetch_user))
         .route("", web::post().to(handlers::new_user))
         .route("/login", web::post().to(handlers::login))
+        .route("/logout", web::get().to(handlers::logout))
         .route("/refresh", web::get().to(handlers::refresh_token))
         .service(
             web::scope("")

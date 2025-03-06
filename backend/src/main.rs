@@ -2,13 +2,13 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{middleware::{DefaultHeaders, Logger}, web::Data, App, HttpResponse, HttpServer};
+use actix_web::{middleware::{from_fn, DefaultHeaders, Logger}, web::Data, App, HttpResponse, HttpServer};
 use apistos::{
     app::{BuildConfig, OpenApiWrapper}, info::Info, server::Server, spec::Spec, web, SwaggerUIConfig
 };
 use db::{AppState, connect};
 use log::{debug, info, LevelFilter};
-use middlewares::logging::init_logging;
+use middlewares::logging::{init_logging, log_requests_middleware};
 use shared::statics::{CONFIG, LEXICON};
 
 mod apps;
@@ -59,6 +59,7 @@ async fn main() -> std::io::Result<()> {
                     "%a | \"%r\" %s %b bytes \"%{Referer}i\" \"%{User-Agent}i\" Handled in %D ms",
                 ))
                 .wrap(cors)
+                // .wrap(from_fn(log_requests_middleware))
                 .service(
                     apistos::web::scope("/api/v1")
                         .service(apps::users::service())

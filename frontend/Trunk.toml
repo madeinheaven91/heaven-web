@@ -1,4 +1,4 @@
+# for dev purposes
 [serve]
 address = "0.0.0.0"
-port = frontend_port
-# port = 3000
+port = 3000

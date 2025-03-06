@@ -1,5 +1,9 @@
+use actix_web::{
+    body::MessageBody, dev::{ServiceRequest, ServiceResponse}, middleware::Next, Error, HttpMessage
+};
+use futures_util::StreamExt;
+use log::{LevelFilter, debug, warn};
 use std::io::Write;
-use log::{debug, warn, LevelFilter};
 use std::{env, fs};
 
 use chrono::Local;
@@ -12,7 +16,8 @@ struct Logger {
 
 impl log::Log for Logger {
     fn enabled(&self, _metadata: &log::Metadata) -> bool {
-        fs::exists(format!("logs/{}.log", self.path)).unwrap_or(false) && CONFIG.log_level != LevelFilter::Off
+        fs::exists(format!("logs/{}.log", self.path)).unwrap_or(false)
+            && CONFIG.log_level != LevelFilter::Off
     }
 
     fn log(&self, record: &log::Record) {
@@ -55,7 +60,8 @@ impl log::Log for Logger {
                 .open(format!("logs/{}.log", self.path));
             if let Ok(mut file) = file {
                 let _ = writeln!(file, "{}", entry);
-            } }
+            }
+        }
     }
 
     fn flush(&self) {}
@@ -99,4 +105,22 @@ fn get_log_level() -> LevelFilter {
         Ok("trace") => LevelFilter::Trace,
         _ => LevelFilter::Info, // Default level
     }
+}
+
+pub async fn log_requests_middleware(
+    req: ServiceRequest,
+    next: Next<impl MessageBody>,
+) -> Result<ServiceResponse<impl MessageBody>, Error> {
+    
+    debug!("{} {} {:?}", req.head().method, req.head().uri, req.head().version);
+    debug!(
+        "{}",
+        req.headers()
+            .iter()
+            .fold(
+                String::new(),
+                |acc, (k,v)| format!("{}{}: {}\n", acc, k, v.to_str().unwrap())
+            )
+    );
+    next.call(req).await
 }
