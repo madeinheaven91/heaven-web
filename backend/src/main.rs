@@ -2,9 +2,9 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{middleware::{from_fn, DefaultHeaders, Logger}, web::Data, App, HttpResponse, HttpServer};
+use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use apistos::{
-    app::{BuildConfig, OpenApiWrapper}, info::Info, server::Server, spec::Spec, web, SwaggerUIConfig
+    app::{BuildConfig, OpenApiWrapper}, info::Info, server::Server, spec::Spec, SwaggerUIConfig
 };
 use db::{AppState, connect};
 use log::{debug, info, LevelFilter};
@@ -16,6 +16,8 @@ mod config;
 mod db;
 mod middlewares;
 mod shared;
+#[cfg(test)]
+mod test;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

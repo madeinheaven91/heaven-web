@@ -2,7 +2,7 @@ use actix::Addr;
 use actix_web::{web::{Data, Json, Path}, HttpRequest, HttpResponse, Responder};
 use apistos::api_operation;
 
-use crate::{apps::users::messages::FetchUser, db::{models::Post, AppState, DbActor}, shared::{errors::APIError, utils::{get_and_send_back, get_claims, get_from_db}}};
+use crate::{apps::users::messages::FetchUser, db::{models::Post, AppState, DbActor}, shared::{errors::APIError, utils::{get_and_send_back, get_claims_by_auth, get_from_db}}};
 
 use super::{forms::{PostCreateForm, PostUpdateForm, TagCreateForm, TagUpdateForm}, messages::{CreatePost, CreateTag, DeletePost, DeleteTag, GetPost, GetPosts, GetTag, GetTags, UpdatePost, UpdateTag, GetPostTags}};
 use super::responses::PostPublic;
@@ -16,7 +16,7 @@ use super::responses::PostPublic;
 pub async fn create_post(req: HttpRequest, state: Data<AppState>, body: Json<PostCreateForm>) -> impl Responder {
     let form = body.into_inner();
     let db = state.db.clone();
-    let msg = match get_claims(req, "access_token").await {
+    let msg = match get_claims_by_auth(req).await {
         Ok(claims) => CreatePost {
             title: form.title.clone(),
             body: form.body.clone(),
@@ -98,7 +98,7 @@ pub async fn update_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
         },
         _ => return APIError::Forbidden.to_http()
     };
-    let msg = match get_claims(req, "access_token").await{
+    let msg = match get_claims_by_auth(req).await{
         Ok(claims) => {
             if claims.sub != post.author_id && !claims.staff {
                 return APIError::Forbidden.to_http()
@@ -136,7 +136,7 @@ pub async fn delete_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
         },
         _ => return APIError::Forbidden.to_http()
     };
-    let msg = match get_claims(req, "access_token").await{
+    let msg = match get_claims_by_auth(req).await{
         Ok(claims) => {
             if claims.sub != post.author_id && !claims.staff {
                 return APIError::Forbidden.to_http()
@@ -165,7 +165,7 @@ pub async fn create_tag(req: HttpRequest, state: Data<AppState>, body: Json<TagC
     let form = body.into_inner();
     let db = state.db.clone();
 
-    let msg = match get_claims(req, "access_token").await {
+    let msg = match get_claims_by_auth(req).await {
         Ok(claims) => {
             if !claims.staff{
                 return APIError::Forbidden.to_http()
@@ -205,7 +205,7 @@ pub async fn update_tag(req: HttpRequest, state: Data<AppState>, path: Path<Stri
     let form = body.into_inner();
     let db = state.db.clone();
 
-    match get_claims(req, "access_token").await{
+    match get_claims_by_auth(req).await{
             Ok(claims) => 
                 if !claims.staff {
                     return APIError::Forbidden.to_http()
@@ -234,7 +234,7 @@ pub async fn delete_tag(req: HttpRequest, state: Data<AppState>, path: Path<Stri
         Ok(r) => r,
         Err(err) => return err.to_http()
     };
-    let msg = match get_claims(req, "access_token").await{
+    let msg = match get_claims_by_auth(req).await{
         Ok(claims) => {
             if !claims.staff {
                 return APIError::Forbidden.to_http()

@@ -6,7 +6,7 @@ use super::{
 use crate::{
     db::AppState,
     shared::{
-        errors::APIError, statics::CONFIG, utils::{create_access_token, create_refresh_token, get_and_send_back, get_claims, hash_password, verify_jwt}
+        errors::APIError, statics::CONFIG, utils::{create_access_token, create_refresh_token, get_and_send_back, get_claims_by_auth, hash_password, verify_jwt}
     },
 };
 use actix_web::{
@@ -46,7 +46,7 @@ pub async fn update_user(req: HttpRequest, state: Data<AppState>, path: Path<i32
     let id = path.into_inner();
     let user = body.into_inner();
     let db = state.db.clone();
-    let msg = match get_claims(req, "access_token").await{
+    let msg = match get_claims_by_auth(req).await{
         Err(err) => return err.to_http(),
         Ok(claims) => {
             if claims.sub != id && !claims.staff {
@@ -69,7 +69,7 @@ pub async fn update_user(req: HttpRequest, state: Data<AppState>, path: Path<i32
 pub async fn delete_user(req: HttpRequest, state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let id = path.into_inner();
     let db = state.db.clone();
-    let msg = match get_claims(req, "access_token").await{
+    let msg = match get_claims_by_auth(req).await{
         Err(err) => return err.to_http(),
         Ok(claims) => {
             if claims.sub != id && !claims.staff {
@@ -96,43 +96,25 @@ pub async fn login(state: Data<AppState>, body: Form<LoginForm>) -> impl Respond
             Ok(user) => {
                 let access_token = create_access_token(user.id, user.is_staff);
                 let refresh_token = create_refresh_token(user.id, user.is_staff);
-                let (access_cookie, refresh_cookie) = match CONFIG.environment.dev() {
-                    true => ( Cookie::build("access_token", &access_token)
-                            .http_only(true)
-                            .path("/")
-                            .expires(OffsetDateTime::now_utc() + cookie::time::Duration::minutes(15))
-                            .same_site(actix_web::cookie::SameSite::None)
-                            .finish(),
-                        Cookie::build("refresh_token", &refresh_token)
+                let refresh_cookie = match CONFIG.environment.dev() {
+                    true => Cookie::build("refresh_token", &refresh_token)
                             .http_only(true)
                             .expires(OffsetDateTime::now_utc() + cookie::time::Duration::days(7))
                             .path("/")
                             .same_site(actix_web::cookie::SameSite::None)
-                            .finish()
-                    ),
-                    false => (
-                        Cookie::build("access_token", &access_token)
-                            .http_only(true)
-                            .path("/")
-                            .expires(OffsetDateTime::now_utc() + cookie::time::Duration::minutes(15))
-                            .same_site(actix_web::cookie::SameSite::None)
-                            .secure(true)
                             .finish(),
-                        Cookie::build("refresh_token", &refresh_token)
+                    false => Cookie::build("refresh_token", &refresh_token)
                             .http_only(true)
                             .expires(OffsetDateTime::now_utc() + cookie::time::Duration::days(7))
                             .path("/")
                             .same_site(actix_web::cookie::SameSite::None)
                             .secure(true)
                             .finish()
-                    )
                 };
                 HttpResponse::Ok()
-                    .cookie(access_cookie)
                     .cookie(refresh_cookie)
                     .json(json!({
-                        "access_token": access_token,
-                        "refresh_token": refresh_token
+                        "access_token": access_token
                     }))
             }
             _ => HttpResponse::Unauthorized()
@@ -145,6 +127,7 @@ pub async fn login(state: Data<AppState>, body: Form<LoginForm>) -> impl Respond
 
 #[allow(clippy::empty_line_after_outer_attr)]
 /// Refresh
+/// Gets refresh httponly cookie and returns a new access token
 #[api_operation(tag = "users")]
 pub async fn refresh_token(req: HttpRequest) -> impl Responder {
     let token = if let Some(cookie) = req.cookie("refresh_token") {
@@ -157,39 +140,22 @@ pub async fn refresh_token(req: HttpRequest) -> impl Responder {
             let claims = claims.claims;
             let access_token = create_access_token(claims.sub, claims.staff);
             let refresh_token = create_refresh_token(claims.sub, claims.staff);
-            let (access_cookie, refresh_cookie) = match CONFIG.environment.dev() {
-                true => ( Cookie::build("access_token", &access_token)
-                        .http_only(true)
-                        .path("/")
-                        .expires(OffsetDateTime::now_utc() + cookie::time::Duration::minutes(15))
-                        .same_site(actix_web::cookie::SameSite::None)
-                        .finish(),
-                    Cookie::build("refresh_token", &refresh_token)
+            let refresh_cookie = match CONFIG.environment.dev() {
+                true => Cookie::build("refresh_token", &refresh_token)
                         .http_only(true)
                         .expires(OffsetDateTime::now_utc() + cookie::time::Duration::days(7))
                         .path("/")
                         .same_site(actix_web::cookie::SameSite::None)
-                        .finish()
-                ),
-                false => (
-                    Cookie::build("access_token", &access_token)
-                        .http_only(true)
-                        .path("/")
-                        .expires(OffsetDateTime::now_utc() + cookie::time::Duration::minutes(15))
-                        .same_site(actix_web::cookie::SameSite::None)
-                        .secure(true)
                         .finish(),
-                    Cookie::build("refresh_token", &refresh_token)
+                false => Cookie::build("refresh_token", &refresh_token)
                         .http_only(true)
                         .expires(OffsetDateTime::now_utc() + cookie::time::Duration::days(7))
                         .path("/")
                         .same_site(actix_web::cookie::SameSite::None)
                         .secure(true)
                         .finish()
-                )
             };
             HttpResponse::Ok()
-                .cookie(access_cookie)
                 .cookie(refresh_cookie)
                 .json(json!({
                     "access_token": access_token,
@@ -201,21 +167,15 @@ pub async fn refresh_token(req: HttpRequest) -> impl Responder {
 }
 
 /// Logout
-/// Expires token cookies
+/// Expires token cookie
 #[api_operation(tag = "users")]
 pub async fn logout(_: HttpRequest) -> impl Responder {
-    let access = Cookie::build("access_token", "")
-        .expires(OffsetDateTime::now_utc() - cookie::time::Duration::days(1))
-        .path("/")
-        .same_site(actix_web::cookie::SameSite::None)
-        .finish();
     let refresh = Cookie::build("refresh_token", "")
         .expires(OffsetDateTime::now_utc() - cookie::time::Duration::days(1))
         .path("/")
         .same_site(actix_web::cookie::SameSite::None)
         .finish();
     HttpResponse::Ok()
-        .cookie(access)
         .cookie(refresh)
         .json("Success")
 }
@@ -225,7 +185,7 @@ pub async fn logout(_: HttpRequest) -> impl Responder {
 #[api_operation(tag = "users", security_scope(name = "jwt token", scope = "read:users"))]
 pub async fn profile(state: Data<AppState>, req: HttpRequest) -> impl Responder {
     let db = state.db.clone();
-    let msg = match get_claims(req, "access_token").await{
+    let msg = match get_claims_by_auth(req).await{
         Err(err) => return err.to_http(),
         Ok(claims) => 
                 FetchUser {

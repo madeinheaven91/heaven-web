@@ -1,7 +1,6 @@
 use actix_web::{
     body::MessageBody, dev::{ServiceRequest, ServiceResponse}, middleware::Next, Error, HttpMessage
 };
-use futures_util::StreamExt;
 use log::{LevelFilter, debug, warn};
 use std::io::Write;
 use std::{env, fs};
