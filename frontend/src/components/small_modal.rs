@@ -1,6 +1,6 @@
 use gloo::utils::window;
 use gloo_net::http::Request;
-use web_sys::{wasm_bindgen::JsCast, HtmlFormElement, RequestCredentials};
+use web_sys::{wasm_bindgen::JsCast, RequestCredentials};
 use yew::{function_component, html, use_state, Callback, Html, InputEvent, Properties, SubmitEvent};
 
 
@@ -28,30 +28,6 @@ pub fn small_modal(SmallModalProps { child, title }: &SmallModalProps) -> Html {
                 </div>
             </div>
         </div>
-    }
-}
-
-pub fn login_form() -> Html {
-    let onsubmit = Callback::from(|event: web_sys::SubmitEvent| {
-        event.prevent_default();
-        let form = event.target().unwrap().dyn_into::<HtmlFormElement>().unwrap();
-    });
-    html! {
-    <form id="loginForm" action="./" onsubmit={onsubmit}>
-        <div class="form-group">
-            <label for="usernameInput">{"Имя"}</label>
-            <input type="text" class="form-control" id="usernameInput" name="name" placeholder="дмитрий прудников"/>
-//            <small id="emailHelp" class="form-text text-muted">{"We'll never share your email with anyone else."}</small>
-        </div>
-        <div class="form-group mt-3">
-            <label for="passwordInput">{"Пароль"}</label>
-            <input type="text" class="form-control" id="passwordInput" name="password" placeholder="12345"/>
-        </div>
-        <div class="modal-footer mt-3 d-flex justify-content-around">
-            <input type="submit" class="btn btn-primary" value={"Войти"}/>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">{"Закрыть"}</button>
-        </div>
-    </form>
     }
 }
 

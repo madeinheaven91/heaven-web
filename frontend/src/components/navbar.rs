@@ -1,5 +1,4 @@
 use crate::{components::small_modal::{LoginForm, SmallModal}, shared::utils::logout};
-use gloo::utils::window;
 use yew::{function_component, html, Callback, Html, Properties};
 
 use crate::models::User;
