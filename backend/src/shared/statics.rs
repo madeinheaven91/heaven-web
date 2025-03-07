@@ -23,3 +23,6 @@ r#"
 
     pub static ref CONFIG: Config = Config::init();
 }
+
+pub const ACCESS_EXPIRATION: i64 = 15; // Minutes
+pub const REFRESH_EXPIRATION: i64 = 7 * 24 * 60; // 7 days

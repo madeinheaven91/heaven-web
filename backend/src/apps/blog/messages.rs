@@ -1,4 +1,4 @@
-use crate::apps::blog::insertables::{NewTag, PostUpdate, TagUpdate};
+use crate::apps::blog::insertables::{NewTag, PostUpdate, TagAssignment, TagUpdate};
 use slug::slugify;
 use actix::{Handler, Message};
 use diesel::{ExpressionMethods, QueryDsl, QueryResult, RunQueryDsl, Table};
@@ -201,7 +201,8 @@ impl Handler<DeleteTag> for DbActor {
     fn handle(&mut self, msg: DeleteTag, _: &mut Self::Context) -> Self::Result {
         use crate::db::schema::tags::dsl::*;
         let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
-        diesel::delete(tags.find(msg.slug)).get_result(&mut conn)
+        diesel::delete(tags.find(msg.slug))
+            .get_result(&mut conn)
     }
 }
 
@@ -225,3 +226,51 @@ impl Handler<GetPostTags> for DbActor {
     }
 }
 
+
+#[derive(Message, Deserialize)]
+#[rtype(result = "QueryResult<Post>")]
+pub struct AssignTagToPost{
+    pub post_slug: String,
+    pub tag_slug: String,
+}
+
+impl Handler<AssignTagToPost> for DbActor {
+    type Result = QueryResult<Post>;
+    fn handle(&mut self, msg: AssignTagToPost, _ctx: &mut Self::Context) -> Self::Result {
+        use crate::db::schema::tags_to_posts::dsl::*;        
+        use crate::db::schema::posts::dsl::*;        
+
+        let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
+        let junction = TagAssignment {
+            post: msg.post_slug.clone(),
+            tag: msg.tag_slug.clone()
+        };
+        diesel::insert_into(tags_to_posts)
+            .values(junction)
+            .execute(&mut conn)
+            .unwrap_or_else(|_| panic!("Error assigning tag {} to post {}", msg.tag_slug, msg.post_slug));
+        posts.find(msg.post_slug).get_result(&mut conn)
+    }
+}
+
+#[derive(Message, Deserialize)]
+#[rtype(result = "QueryResult<Post>")]
+pub struct RemoveTagFromPost{
+    pub post_slug: String,
+    pub tag_slug: String,
+}
+
+impl Handler<RemoveTagFromPost> for DbActor {
+    type Result = QueryResult<Post>;
+    fn handle(&mut self, msg: RemoveTagFromPost, _ctx: &mut Self::Context) -> Self::Result {
+        use crate::db::schema::tags_to_posts::dsl::*;        
+        use crate::db::schema::posts::dsl::*;        
+
+        let mut conn = self.pool.get().expect(LEXICON["db_pool_error"]);
+
+        diesel::delete(tags_to_posts.filter(post.eq(&msg.post_slug)).filter(tag.eq(&msg.tag_slug)))
+            .execute(&mut conn)
+            .unwrap_or_else(|_| panic!("Error removing tag {} from post {}", msg.tag_slug, msg.post_slug));
+        posts.find(msg.post_slug).get_result(&mut conn)
+    }
+}

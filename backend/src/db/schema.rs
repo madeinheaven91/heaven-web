@@ -7,7 +7,7 @@ diesel::table! {
         #[max_length = 255]
         title -> Varchar,
         body -> Text,
-        author_id -> Int4,
+        author_id -> Nullable<Int4>,
         is_published -> Bool,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

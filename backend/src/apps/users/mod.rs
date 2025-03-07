@@ -8,9 +8,13 @@ mod handlers;
 mod insertables;
 pub mod messages;
 pub mod responses;
+#[cfg(test)]
+mod test;
 
 pub fn service() -> Scope {
     web::scope("/users")
+        .route("/sudo", web::get().to(handlers::sudo)) // NOTE: must be
+        // called on database initialization
         .route("/fetch", web::get().to(handlers::fetch_users))
         .route("/fetch/{id}", web::get().to(handlers::fetch_user))
         .route("/login", web::post().to(handlers::login))

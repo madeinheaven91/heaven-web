@@ -17,7 +17,7 @@ pub struct Post {
     pub slug: String,
     pub title: String,
     pub body: String,
-    pub author_id: i32,
+    pub author_id: Option<i32>,
     pub is_published: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
@@ -32,7 +32,7 @@ pub struct Tag {
     pub foreground_color: String,
 }
 
-#[derive(Queryable, Debug, Serialize, Deserialize)]
+#[derive(Queryable, Identifiable, Debug, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = tags_to_posts)]
 pub struct TagsToPost {
     pub id: i32,

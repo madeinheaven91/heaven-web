@@ -7,6 +7,7 @@ use argon2::{
 use chrono::{Duration, Utc};
 use diesel::result::Error::NotFound;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
+use rand::{random_bool, random_range};
 use serde::{Deserialize, Serialize};
 
 use crate::db::DbActor;
@@ -16,8 +17,6 @@ use super::{
     statics::{CONFIG, LEXICON},
 };
 
-const ACCESS_EXPIRATION: i64 = 15; // Minutes
-const REFRESH_EXPIRATION: i64 = 7 * 24 * 60; // 7 days
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -26,7 +25,7 @@ pub struct Claims {
     pub staff: bool,
 }
 
-fn create_jwt(sub: i32, staff: bool, expiration_minutes: i64) -> String {
+pub fn create_jwt(sub: i32, staff: bool, expiration_minutes: i64) -> String {
     let payload = Claims {
         sub,
         exp: (Utc::now() + Duration::minutes(expiration_minutes)).timestamp(),
@@ -38,14 +37,6 @@ fn create_jwt(sub: i32, staff: bool, expiration_minutes: i64) -> String {
         &EncodingKey::from_secret(CONFIG.secret_key.as_bytes()),
     )
     .unwrap()
-}
-
-pub fn create_access_token(sub: i32, staff: bool) -> String {
-    create_jwt(sub, staff, ACCESS_EXPIRATION)
-}
-
-pub fn create_refresh_token(sub: i32, staff: bool) -> String {
-    create_jwt(sub, staff, REFRESH_EXPIRATION)
 }
 
 pub fn verify_jwt(token: &str) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
@@ -125,4 +116,17 @@ pub async fn get_claims_by_auth(req: HttpRequest) -> Result<Claims, APIError> {
     };
 
     Err(APIError::MissingToken)
+}
+
+pub fn random_string(len: i32) -> String {
+    (0..len).fold(String::new(), |acc, _| {
+        let mut char = char::from(random_range(97..122)).to_string();
+        char = if random_bool(0.5){
+            char.to_uppercase()
+        }else {
+            char
+        };
+        acc + &char
+    }
+    )
 }

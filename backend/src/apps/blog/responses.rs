@@ -1,8 +1,8 @@
 use chrono::NaiveDateTime;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use crate::{apps::users::responses::UserPublic, db::models::Tag};
 
-#[derive(Queryable, Serialize, Debug)]
+#[derive(Queryable, Serialize, Deserialize, Debug)]
 pub struct PostPublic {
     pub slug: String,
     pub title: String,
@@ -12,4 +12,10 @@ pub struct PostPublic {
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub tags: Vec<Tag>
+}
+
+#[derive(Queryable, Serialize, Deserialize, Debug)]
+pub struct TagToPostPublic {
+    pub post_slug: String,
+    pub tag_slug: String
 }

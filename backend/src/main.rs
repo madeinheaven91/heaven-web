@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate diesel;
 
+#[allow(unused_imports)]
+
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use apistos::{
@@ -16,8 +18,6 @@ mod config;
 mod db;
 mod middlewares;
 mod shared;
-#[cfg(test)]
-mod test;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -38,7 +38,7 @@ async fn main() -> std::io::Result<()> {
                 }],
                 ..Default::default()
             };
-            let build_config = match CONFIG.environment.prod() {
+            let build_config = match CONFIG.environment.dev() {
                 true => BuildConfig::default().with(SwaggerUIConfig::new(&"/swagger")),
                 false => BuildConfig::default(),
             };

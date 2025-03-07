@@ -1,8 +1,11 @@
+use crate::apps::blog::responses::TagToPostPublic;
+use crate::apps::blog::messages::RemoveTagFromPost;
+use crate::apps::blog::messages::AssignTagToPost;
 use actix::Addr;
 use actix_web::{web::{Data, Json, Path}, HttpRequest, HttpResponse, Responder};
 use apistos::api_operation;
 
-use crate::{apps::users::messages::FetchUser, db::{models::Post, AppState, DbActor}, shared::{errors::APIError, utils::{get_and_send_back, get_claims_by_auth, get_from_db}}};
+use crate::{apps::users::{messages::FetchUser, responses::UserPublic}, db::{models::Post, AppState, DbActor}, shared::{errors::APIError, utils::{get_and_send_back, get_claims_by_auth, get_from_db}}};
 
 use super::{forms::{PostCreateForm, PostUpdateForm, TagCreateForm, TagUpdateForm}, messages::{CreatePost, CreateTag, DeletePost, DeleteTag, GetPost, GetPosts, GetTag, GetTags, UpdatePost, UpdateTag, GetPostTags}};
 use super::responses::PostPublic;
@@ -29,7 +32,10 @@ pub async fn create_post(req: HttpRequest, state: Data<AppState>, body: Json<Pos
 }
 
 async fn get_public_post(db: &Addr<DbActor>, post: Post) -> Result<PostPublic, APIError> {
-    let author = get_from_db(db.clone(), FetchUser{id: post.author_id}).await?;
+    let author = match post.author_id {
+        None => UserPublic::null(),
+        Some(id) => get_from_db(db.clone(), FetchUser{id}).await?
+    };
     let tags = get_from_db(db.clone(), GetPostTags{slug: post.slug.clone()}).await?;
     let res = PostPublic {
             tags,
@@ -100,7 +106,7 @@ pub async fn update_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
     };
     let msg = match get_claims_by_auth(req).await{
         Ok(claims) => {
-            if claims.sub != post.author_id && !claims.staff {
+            if claims.sub != post.author_id.unwrap_or(-1) && !claims.staff {
                 return APIError::Forbidden.to_http()
             };
             UpdatePost {
@@ -113,9 +119,13 @@ pub async fn update_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
         Err(err) => return err.to_http(),
     };
 
-    get_and_send_back(db.clone(), msg).await;
+    let exec = get_from_db(db.clone(), msg).await;
+    let updated = match exec {
+        Ok(res) => res,
+        Err(err) => return err.to_http()
+    };
 
-    match get_public_post(&db, post).await {
+    match get_public_post(&db, updated).await {
         Ok(r) => HttpResponse::Ok().json(r),
         Err(err) => err.to_http()
     }
@@ -138,7 +148,7 @@ pub async fn delete_post(req: HttpRequest, state: Data<AppState>, path: Path<Str
     };
     let msg = match get_claims_by_auth(req).await{
         Ok(claims) => {
-            if claims.sub != post.author_id && !claims.staff {
+            if claims.sub != post.author_id.unwrap_or(-1) && !claims.staff {
                 return APIError::Forbidden.to_http()
             };
             DeletePost{slug}
@@ -220,7 +230,7 @@ pub async fn update_tag(req: HttpRequest, state: Data<AppState>, path: Path<Stri
         foreground_color: form.foreground_color
     };
     get_and_send_back(db.clone(), msg).await;
-    get_and_send_back(db, GetPost{slug}).await
+    get_and_send_back(db, GetTag{slug}).await
 }
 
 
@@ -229,7 +239,7 @@ pub async fn update_tag(req: HttpRequest, state: Data<AppState>, path: Path<Stri
 pub async fn delete_tag(req: HttpRequest, state: Data<AppState>, path: Path<String>) -> impl Responder {
     let slug = path.into_inner();
     let db = state.db.clone();
-    let res = get_from_db(db.clone(), GetPost{slug: slug.clone()}).await;
+    let res = get_from_db(db.clone(), GetTag{slug: slug.clone()}).await;
     let res = match res{
         Ok(r) => r,
         Err(err) => return err.to_http()
@@ -248,3 +258,62 @@ pub async fn delete_tag(req: HttpRequest, state: Data<AppState>, path: Path<Stri
     HttpResponse::Ok().json(res)
 }
 
+/// Assign tag to post
+#[api_operation(tag = "tags", security_scope(name = "jwt token", scope = "write:tags"))]
+pub async fn assign_tag_to_post(req: HttpRequest, state: Data<AppState>, path: Path<(String, String)>) -> impl Responder {
+    let path = path.into_inner();
+    let (post_slug, tag_slug) = (path.0, path.1);
+    let db = state.db.clone();
+    let post = match get_from_db(db.clone(), GetPost{slug: post_slug.clone()}).await {
+        Ok(res) => res,
+        Err(err) => return err.to_http()
+    };
+    let msg = match get_claims_by_auth(req).await{
+        Ok(claims) => {
+            if claims.sub != post.author_id.unwrap_or(-1) && !claims.staff {
+                return APIError::Forbidden.to_http()
+            };
+            AssignTagToPost{post_slug, tag_slug: tag_slug.clone()}
+        },
+        Err(err) => return err.to_http(),
+    };
+
+    let exec = get_from_db(db, msg).await;
+    match exec {
+        Ok(res) => HttpResponse::Ok().json(TagToPostPublic {
+            post_slug: res.slug,
+            tag_slug
+        }),
+        Err(err) => err.to_http()
+    }
+}
+
+/// Remove tag from post
+#[api_operation(tag = "tags", security_scope(name = "jwt token", scope = "write:tags"))]
+pub async fn rm_tag_from_post(req: HttpRequest, state: Data<AppState>, path: Path<(String, String)>) -> impl Responder {
+    let path = path.into_inner();
+    let (post_slug, tag_slug) = (path.0, path.1);
+    let db = state.db.clone();
+    let post = match get_from_db(db.clone(), GetPost{slug: post_slug.clone()}).await {
+        Ok(res) => res,
+        Err(err) => return err.to_http()
+    };
+    let msg = match get_claims_by_auth(req).await{
+        Ok(claims) => {
+            if claims.sub != post.author_id.unwrap_or(-1) && !claims.staff {
+                return APIError::Forbidden.to_http()
+            };
+            RemoveTagFromPost{post_slug, tag_slug: tag_slug.clone()}
+        },
+        Err(err) => return err.to_http(),
+    };
+
+    let exec = get_from_db(db, msg).await;
+    match exec {
+        Ok(res) => HttpResponse::Ok().json(TagToPostPublic {
+            post_slug: res.slug,
+            tag_slug
+        }),
+        Err(err) => err.to_http()
+    }
+}

@@ -3,7 +3,7 @@ CREATE TABLE posts (
   slug VARCHAR(255) PRIMARY KEY UNIQUE,
   title VARCHAR(255) NOT NULL,
   body TEXT NOT NULL,
-  author_id INTEGER NOT NULL REFERENCES users(id),
+  author_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   is_published BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP

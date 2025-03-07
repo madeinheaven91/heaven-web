@@ -1,4 +1,3 @@
-
 use super::{
     forms::{LoginForm, UpdateUserForm, CreateUser},
     messages::{DeleteUser, FetchUser, FetchUsers, UpdateUser},
@@ -6,7 +5,7 @@ use super::{
 use crate::{
     db::AppState,
     shared::{
-        errors::APIError, statics::CONFIG, utils::{create_access_token, create_refresh_token, get_and_send_back, get_claims_by_auth, hash_password, verify_jwt}
+        errors::APIError, statics::{ACCESS_EXPIRATION, CONFIG, REFRESH_EXPIRATION}, utils::{create_jwt, get_and_send_back, get_claims_by_auth, get_from_db, hash_password, random_string, verify_jwt}
     },
 };
 use actix_web::{
@@ -94,8 +93,8 @@ pub async fn login(state: Data<AppState>, body: Form<LoginForm>) -> impl Respond
     match db.send(msg).await {
         Ok(res) => match res {
             Ok(user) => {
-                let access_token = create_access_token(user.id, user.is_staff);
-                let refresh_token = create_refresh_token(user.id, user.is_staff);
+                let access_token = create_jwt(user.id, user.is_staff, ACCESS_EXPIRATION);
+                let refresh_token = create_jwt(user.id, user.is_staff, REFRESH_EXPIRATION);
                 let refresh_cookie = match CONFIG.environment.dev() {
                     true => Cookie::build("refresh_token", &refresh_token)
                             .http_only(true)
@@ -138,8 +137,8 @@ pub async fn refresh_token(req: HttpRequest) -> impl Responder {
     match verify_jwt(&token) {
         Ok(claims) => {
             let claims = claims.claims;
-            let access_token = create_access_token(claims.sub, claims.staff);
-            let refresh_token = create_refresh_token(claims.sub, claims.staff);
+            let access_token = create_jwt(claims.sub, claims.staff, ACCESS_EXPIRATION);
+            let refresh_token = create_jwt(claims.sub, claims.staff, REFRESH_EXPIRATION);
             let refresh_cookie = match CONFIG.environment.dev() {
                 true => Cookie::build("refresh_token", &refresh_token)
                         .http_only(true)
@@ -194,3 +193,22 @@ pub async fn profile(state: Data<AppState>, req: HttpRequest) -> impl Responder 
     };
     get_and_send_back(db, msg).await
 }
+
+/// Superuser
+/// Create a superuser and return its eternal access token
+#[api_operation(tag = "users")]
+pub async fn sudo(state: Data<AppState>) -> impl Responder {
+    let msg = CreateUser {
+        name: "superuser".to_string(),
+        password: random_string(32),
+        email: None,
+        is_staff: true
+    };
+    let db = state.db.clone();
+    let superuser = get_from_db(db, msg).await.expect("Failed to create superuser");
+    HttpResponse::Ok()
+        .json(json!({
+            "access_token": create_jwt(superuser.id, true, 5259492)
+        }))
+}
+

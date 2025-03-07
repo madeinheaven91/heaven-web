@@ -1,5 +1,5 @@
 use actix_web::{
-    body::MessageBody, dev::{ServiceRequest, ServiceResponse}, middleware::Next, Error, HttpMessage
+    body::MessageBody, dev::{ServiceRequest, ServiceResponse}, middleware::Next, Error
 };
 use log::{LevelFilter, debug, warn};
 use std::io::Write;
@@ -106,6 +106,7 @@ fn get_log_level() -> LevelFilter {
     }
 }
 
+#[allow(dead_code)]
 pub async fn log_requests_middleware(
     req: ServiceRequest,
     next: Next<impl MessageBody>,

@@ -29,3 +29,4 @@ serde_json = "1.0.139"
 slug = "0.1.6"
 schemars = { package = "apistos-schemars", version = "0.8" }
 apistos = { version = "0.4.2", features = ["swagger-ui"] }
+rand = "0.9.0"

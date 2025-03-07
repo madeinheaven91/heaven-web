@@ -8,6 +8,17 @@ pub struct UserPublic {
     pub is_staff: bool
 }
 
+impl UserPublic{
+    pub fn null() -> Self {
+        UserPublic {
+            id: 0,
+            name: "null".to_string(),
+            email: None,
+            is_staff: false
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Tokens {
     pub access_token: String,
