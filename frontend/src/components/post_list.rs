@@ -1,17 +1,18 @@
-use crate::components::tag_list::TagList;
-// use gloo_net::http::Request;
+use crate::components::delete_button::DeleteButton;
+use crate::{components::tag_list::TagList, hooks::use_user_context::use_user_context};
 use yew::{function_component, html, Html, Properties};
 
-use crate::models::{Post, User};
+use crate::models::Post;
 
 #[derive(Properties, PartialEq)]
 pub struct PostListProps {
     pub posts: Vec<Post>,
-    pub user: Option<User>
 }
 
-#[function_component(PostList)]
-pub fn post_list(PostListProps { posts, user }: &PostListProps) -> Html {
+#[function_component]
+pub fn PostList(PostListProps { posts }: &PostListProps) -> Html {
+    let user = use_user_context();
+    let posts: Vec<Post> = posts.clone().into_iter().filter(|p| p.is_published).collect();
     if posts.is_empty() {
         html! {
             <h1 class="text-secondary">{ "Нет постов..." }</h1>
@@ -28,7 +29,7 @@ pub fn post_list(PostListProps { posts, user }: &PostListProps) -> Html {
                     },
                     
                 };
-                let buttons = match user {
+                let buttons = match (*user).clone() {
                     Some(inner) => html! {
                         if post.author.id == inner.id || inner.is_staff {
                             <div class="btn-group gap-2">
@@ -36,14 +37,7 @@ pub fn post_list(PostListProps { posts, user }: &PostListProps) -> Html {
                                     <a href={ "./post/".to_string() + &post.slug + "/edit" } class="btn btn-primary">{ "Редактировать" }</a>
                                 }
                                 if post.author.id == inner.id || inner.is_staff {
-                                    <a class="btn btn-danger" 
-//                                        onclick={
-//                                    let slug = slug.clone();
-//                                    Callback::from(move |_| {
-//                                            spawn_local(async move {
-//                                                delete_post(&slug.clone()).await;
-//                                            })})}
-                                    >{"Удалить"}</a>
+                                    <DeleteButton slug={post.slug.clone()} />
                                 }
                             </div>
                         }
@@ -56,7 +50,9 @@ pub fn post_list(PostListProps { posts, user }: &PostListProps) -> Html {
                         <a href={ "./post/".to_string() + &post.slug } class="text-decoration-none text-primary fs-3">
                             { &post.title }
                         </a>
-                        {tags_list}
+                        <div>
+                           {tags_list}
+                        </div>
                         <h4 class="text-secondary">{{ &post.author.name }}</h4>
                         </div>
                         {buttons}
@@ -66,6 +62,7 @@ pub fn post_list(PostListProps { posts, user }: &PostListProps) -> Html {
             .collect()
     }
 }
+
 
 // async fn delete_post(slug: &str) {
 //     Request::delete(format!("http://localhost:8000/api/v1/blog/posts/{slug}").as_str())

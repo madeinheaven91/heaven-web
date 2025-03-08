@@ -20,4 +20,8 @@ impl Config {
                 .unwrap_or(3000),
         }
     }
+
+    pub fn api_url(&self) -> String {
+        format!("http://localhost:{}/api/v1", self.backend_port)
+    }
 }

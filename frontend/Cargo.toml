@@ -12,7 +12,6 @@ path = "src/main.rs"
 [dependencies]
 chrono = { version = "0.4.40", features = ["serde"] }
 gloo = "0.11.0"
-gloo-net = "0.6.0"
 gloo-storage = "0.3.0"
 lazy_static = "1.5.0"
 serde = "1.0.218"
@@ -29,6 +28,9 @@ web-sys = { version = "0.3.77", features = [
     "console",
 ] }
 yew = { version="0.21", features=["csr"] }
+yew-hooks = "0.3"
 yew-router = "0.18.0"
 yew-markdown = {git="https://github.com/rambip/rust-web-markdown", package="yew-markdown", version="0.2.2"}
 wasm-cookies = "0.2.1"
+pulldown-cmark = "0.13.0"
+reqwest = {version="0.12.12", features=["cookies"]}

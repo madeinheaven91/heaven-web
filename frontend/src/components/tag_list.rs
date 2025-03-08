@@ -3,8 +3,8 @@ use yew::{function_component, html, Html};
 
 use crate::models::Tag;
 
-#[function_component(TagList)]
-pub fn tag_list(TagListProps { tags }: &TagListProps) -> Html {
+#[function_component]
+pub fn TagList(TagListProps { tags }: &TagListProps) -> Html {
     if tags.is_empty() {
         html! {
             <p class="text-secondary">{ "Нет тегов..." }</p>

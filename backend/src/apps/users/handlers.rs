@@ -158,7 +158,6 @@ pub async fn refresh_token(req: HttpRequest) -> impl Responder {
                 .cookie(refresh_cookie)
                 .json(json!({
                     "access_token": access_token,
-                    "refresh_token": refresh_token
                 }))
         }
         _ => HttpResponse::Unauthorized().finish()
