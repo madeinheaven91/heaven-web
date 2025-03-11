@@ -1,20 +1,12 @@
 services:
-  # hw-frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #     args:
-  #       - FRONTEND_PORT=${FRONTEND_PORT}
-  #   ports:
-  #     - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-  #   # depends_on:
-  #   #   - hw-backend
-  #   environment:
-  #     FRONTEND_PORT: ${FRONTEND_PORT}
-  #     BACKEND_HOST: hw-backend
-  #     BACKEND_PORT: ${SERVER_PORT}
-  #   restart: unless-stopped
+  hw-frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
 
   hw-backend:
     container_name: backend
