@@ -1,8 +1,4 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue';
-import TagList from './TagList.vue'
-import { type User } from '../shared/models.ts'
-import { useStore } from 'vuex'
 
 const props = defineProps({
   title: String,

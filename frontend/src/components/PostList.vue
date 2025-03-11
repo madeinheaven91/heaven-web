@@ -1,34 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import TagList from './TagList.vue'
-import { type User } from '../shared/models.ts'
-import { delete_post } from '../shared/utils.ts'
-import { useStore } from 'vuex'
+import { useAuthStore } from '../shared/store.ts'
 import DeleteButton from './DeleteButton.vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router';
+import { type Post } from '../shared/models.ts'
 
 const router = useRouter();
 
-const props = defineProps({
-  posts: Array,
-});
+const props = defineProps<{
+  posts: Post[],
+}>();
 
-const store = useStore();
-const user = computed(() => store.state.user);
+const store = useAuthStore();
+const user = computed(() => store.user);
 
-const on_delete = async (slug) => {
-  confirm('Вы уверены?');
-  try {
-    await delete_post(slug);
-    alert("Удалено");
-  }
-  catch (error){
-    console.log(error);
-  }
-};
-
-const publish = async (slug) => {
+const publish = async (slug: string) => {
   try {
     axios.patch(`http://localhost:8000/api/v1/blog/posts/${slug}`, {
       is_published: true
@@ -47,8 +35,8 @@ const publish = async (slug) => {
 </script>
 
 <template>
-  <div v-if="posts && posts.length">
-    <div v-for="post in posts" :key="post.slug">
+  <div v-if="props.posts && props.posts.length">
+    <div v-for="post in props.posts" :key="post.slug">
       <div class="border px-3 pt-3 d-flex flex-row justify-content-between align-items-center w-auto">
         <div class="d-flex flex-column">
           <a :href="`/blog/post/${post.slug}`" class="text-decoration-none text-primary fs-3 text-wrap text-break">

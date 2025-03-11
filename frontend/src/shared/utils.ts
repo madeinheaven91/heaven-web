@@ -1,5 +1,4 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 import type { Post, Tag, User } from "./models";
 
 async function delete_post(slug: string) {
@@ -31,7 +30,7 @@ async function load_profile(): Promise<User | null> {
     return profile;
   } catch (error) {
     try{
-      let { data } = await axios
+      await axios
         .get("http://localhost:8000/api/v1/users/refresh", {
           withCredentials: true
         });

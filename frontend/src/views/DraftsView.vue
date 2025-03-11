@@ -1,11 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import PostList from '../components/PostList.vue'
 import TagList from '../components/TagList.vue'
 import { onMounted, ref, computed } from 'vue'
 import { fetch_posts, fetch_tags } from '../shared/utils'
+import type { Post, Tag } from '../shared/models.ts'
 
-let posts = ref([]);
-let tags = ref([]);
+let posts = ref<Post[]>([]);
+let tags = ref<Tag[]>([]);
 
 onMounted(async () => {
   let p = await fetch_posts();

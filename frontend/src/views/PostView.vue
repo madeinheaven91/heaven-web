@@ -5,18 +5,18 @@ import { fetch_post } from '../shared/utils';
 import { MdPreview, MdCatalog } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
 import type { User } from '../shared/models.ts'
-import { useStore } from 'vuex'
+import { useAuthStore } from '../shared/store.ts'
 import DeleteButton from '../components/DeleteButton.vue';
 
-const store = useStore();
-const user = computed(() => store.state.user);
+const store = useAuthStore();
+const user = computed(() => store.user);
 
 const props = defineProps({
   slug: String
 });
 const post = ref<Post | null>(null);
 onMounted(async () => {
-  post.value = await fetch_post(props.slug);
+  post.value = await fetch_post(props.slug as string);
 })
 
 </script>

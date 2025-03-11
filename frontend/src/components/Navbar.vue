@@ -1,25 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed } from 'vue'
-import { login, load_profile, remove_token } from '../shared/utils.ts'
-import type { User } from '../shared/models.ts'
-import { useStore } from 'vuex'
+import { computed } from 'vue'
+import { remove_token } from '../shared/utils.ts'
+import { useAuthStore } from '../shared/store.ts'
 import SmallModal from './SmallModal.vue'
 import LoginForm from './LoginForm.vue'
 
-const store = useStore();
-const user = computed(() => store.state.user);
-const isAuthenticated = computed(() => store.getters.isAuthenticated);
+const store = useAuthStore();
+const user = computed(() => store.user);
+const isAuthenticated = computed(() => store.isAuthenticated);
 
 const logout = () => {
-  store.commit('logout');
+  store.logout();
   remove_token();
 }
 
-const auth = async () => {
-  await login('madeinheaven91', 'bebra');
-  let profile = await load_profile();
-  store.commit('login', profile);
-}
 </script>
 
 <template>
@@ -44,9 +38,6 @@ const auth = async () => {
           </li>
         </ul>
         <ul v-else class="navbar-nav me-auto mb-2 mb-lg-0">
-          <!-- <li class="nav-item"> -->
-          <!--   <a class="nav-link" @click="async () => { await auth()}">Вход</a> -->
-          <!-- </li> -->
           <li class="nav-item">
               <a type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#login_modal">Вход</a>
               <SmallModal id="login_modal" title="Авторизация">

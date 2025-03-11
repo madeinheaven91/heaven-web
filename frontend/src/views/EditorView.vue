@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { ref, onMounted, reactive, computed, watch } from 'vue'
+import { ref, onMounted, reactive, computed } from 'vue'
 import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-import type { User, Tag } from '../shared/models.ts'
+import type { Tag, Post } from '../shared/models.ts'
 import { fetch_post } from '../shared/utils';
-import { useStore } from 'vuex'
-import SmallModal from './SmallModal.vue'
-import LoginForm from './LoginForm.vue'
+import { useAuthStore } from '../shared/store.ts'
 import axios from 'axios'
-import { type Post } from '../shared/models.ts'
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps<{ slug: String | null }>();
-const post = reactive<Post>({});
-const store = useStore();
-const user = computed(() => store.state.user);
-const isAuthenticated = computed(() => store.getters.isAuthenticated);
+const post = reactive<Post>({} as Post);
+const store = useAuthStore();
+const user = computed(() => store.user);
+const isAuthenticated = computed(() => store.isAuthenticated);
 
 const title = ref("");
 const body = ref("");
@@ -57,6 +57,7 @@ const savePost = async () => {
           },
         });
       }
+      router.push(`/blog/post/${slug}`)
       alert("SUCCESS");
     } catch (error) {
       console.log(error);
@@ -69,9 +70,8 @@ const selectedTags = ref<Tag[]>([]);
 const selectedTag = ref<Tag | null>(null);
 
 const addTag = (tag: Tag) => {
-  if (!selectedTags.value.some(t => t.id === tag.id)) {
+  if (!selectedTags.value.some(t => t.slug === tag.slug)) {
     selectedTags.value.push(tag);
-    console.log(selectedTags.value);
   }
 }
 
@@ -88,9 +88,8 @@ onMounted(async () => {
   }
 
   if (props.slug) {
-    let p = await fetch_post(props.slug);
+    let p = await fetch_post(props.slug as string);
     Object.assign(post, p);
-    console.log(post.value);
     title.value = post.title;
     body.value = post.body;
   }
@@ -100,7 +99,7 @@ onMounted(async () => {
 <template>
   <div v-if="isAuthenticated">
     <input type="text" v-model="title" class="text-wrap text-break fs-1"></input>
-    <p class="text-wrap text-break text-secondary fs-3">{{ store.state.user?.name }}</p>
+    <p class="text-wrap text-break text-secondary fs-3">{{ store.user?.name }}</p>
 
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
