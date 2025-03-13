@@ -1,8 +1,15 @@
-interface User {
+class User {
   id: number;
   name: string;
   email: string;
   is_staff: boolean;
+
+  constructor(id: number, name: string, email: string, is_staff: boolean) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.is_staff = is_staff;
+  }
 }
 
 interface Post {
@@ -23,4 +30,4 @@ interface Tag {
   foreground_color: string;
 }
 
-export { type User, type Post, type Tag }
+export { User, type Post, type Tag }

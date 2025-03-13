@@ -5,7 +5,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      VITE_API_URL: ${API_URL}
     restart: unless-stopped
 
   hw-backend:

@@ -1,10 +1,12 @@
 import axios from "axios";
 import type { Post, Tag, User } from "./models";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 async function delete_post(slug: string) {
   try {
     const response = await axios
-      .delete(`http://localhost:8000/api/v1/blog/posts/${slug}`, {
+      .delete(`${BASE_URL}/blog/posts/${slug}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -21,7 +23,7 @@ async function delete_post(slug: string) {
 async function load_profile(): Promise<User | null> {
   try {
     let profile = await axios
-      .get("http://localhost:8000/api/v1/users/profile", {
+      .get(`${BASE_URL}/users/profile`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -31,11 +33,11 @@ async function load_profile(): Promise<User | null> {
   } catch (error) {
     try{
       await axios
-        .get("http://localhost:8000/api/v1/users/refresh", {
+        .get(`${BASE_URL}/users/refresh`, {
           withCredentials: true
         });
       let profile = await axios
-        .get("http://localhost:8000/api/v1/users/profile", {
+        .get(`${BASE_URL}/users/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -52,8 +54,8 @@ async function load_profile(): Promise<User | null> {
 async function login(name: string, password: string) {
   let resp = await axios
     .post(
-      "http://localhost:8000/api/v1/users/login",
-      "name=" + name + "&password=" + password,
+      `${BASE_URL}/users/login`,
+      `name=${name}&password=${password}`,
       {
         withCredentials: true,
         headers: {
@@ -74,14 +76,14 @@ function remove_token() {
 
 async function fetch_posts(): Promise<Post[]> {
   let posts = await axios
-    .get("http://localhost:8000/api/v1/blog/posts/fetch")
+    .get(`${BASE_URL}/blog/posts/fetch`)
     .then((res) => res.data);
   return posts;
 }
 
 async function fetch_tags(): Promise<Tag[]> {
   let posts = await axios
-    .get("http://localhost:8000/api/v1/blog/tags/fetch")
+    .get(`${BASE_URL}/blog/tags/fetch`)
     .then((res) => res.data);
   return posts;
 }
@@ -89,7 +91,7 @@ async function fetch_tags(): Promise<Tag[]> {
 async function fetch_post(slug: string): Promise<Post | null> {
   try {
     let post = await axios
-      .get(`http://localhost:8000/api/v1/blog/posts/fetch/${slug}`)
+      .get(`${BASE_URL}/blog/posts/fetch/${slug}`)
       .then((res) => res.data);
     return post;
   } catch (error) {

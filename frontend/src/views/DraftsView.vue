@@ -10,7 +10,7 @@ let tags = ref<Tag[]>([]);
 
 onMounted(async () => {
   let p = await fetch_posts();
-  let filtered = p.filter(p => !p.is_published);
+  let filtered = p.filter(ps => !ps.is_published);
   posts.value = filtered;
   let t = await fetch_tags();
   tags.value = t;

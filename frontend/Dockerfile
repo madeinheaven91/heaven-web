@@ -14,5 +14,4 @@ RUN npm run build
 
 EXPOSE 8080
 
-# Use `serve` with history mode support
 CMD [ "serve", "-s", "dist" ]

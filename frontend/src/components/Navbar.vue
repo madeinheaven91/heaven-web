@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { remove_token } from '../shared/utils.ts'
 import { useAuthStore } from '../shared/store.ts'
 import SmallModal from './SmallModal.vue'
@@ -13,7 +13,6 @@ const logout = () => {
   store.logout();
   remove_token();
 }
-
 </script>
 
 <template>
