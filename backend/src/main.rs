@@ -47,7 +47,7 @@ async fn main() -> std::io::Result<()> {
                 .allowed_origin_fn(|header, _| {
                     header.to_str().unwrap().starts_with("http://localhost")
                 })
-                .allowed_origin("https://madeinheave.space")
+                .allowed_origin("https://madeinheaven.space")
                 .allow_any_header()
                 .supports_credentials()
                 .max_age(3600)

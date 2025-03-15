@@ -19,7 +19,7 @@ const user = computed(() => store.user);
 
 const publish = async (slug: string) => {
   try {
-    axios.patch(`{BASE_URL}/api/v1/blog/posts/${slug}`, {
+    axios.patch(`${BASE_URL}/blog/posts/${slug}`, {
       is_published: true
     }, {
       headers: {

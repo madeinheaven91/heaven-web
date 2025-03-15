@@ -27,7 +27,7 @@ const savePost = async () => {
   }
   if (props.slug) {
     try{
-      const response = await axios.patch(`{BASE_URL}/blog/posts/${props.slug}`, {
+      const response = await axios.patch(`${BASE_URL}/blog/posts/${props.slug}`, {
         title: title.value,
         body: body.value,
       }, {
@@ -41,7 +41,7 @@ const savePost = async () => {
     }
   }else{
     try {
-      const response = await axios.post("{BASE_URL}/api/v1/blog/posts/new", {
+      const response = await axios.post(`${BASE_URL}/blog/posts/new`, {
         title: title.value,
         body: body.value,
       }, {
@@ -52,7 +52,7 @@ const savePost = async () => {
       const slug = response.data.slug;
 
       for (const tag of selectedTags.value) {
-        await axios.post(`{BASE_URL}/api/v1/blog/posts/${slug}/assign/${tag.slug}`, {}, {
+        await axios.post(`${BASE_URL}/blog/posts/${slug}/assign/${tag.slug}`, {}, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -82,7 +82,7 @@ const removeTag = (tag: Tag) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get("{BASE_URL}/api/v1/blog/tags/fetch");
+    const response = await axios.get(`${BASE_URL}/blog/tags/fetch`);
     allTags.value = response.data;
   } catch (error) {
     console.log(error);
