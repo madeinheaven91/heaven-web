@@ -18,6 +18,7 @@ const isAuthenticated = computed(() => store.isAuthenticated);
 
 const title = ref("");
 const body = ref("");
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const savePost = async () => {
   if (!title.value || !body.value) {
@@ -26,7 +27,7 @@ const savePost = async () => {
   }
   if (props.slug) {
     try{
-      const response = await axios.patch(`http://localhost:8000/api/v1/blog/posts/${props.slug}`, {
+      const response = await axios.patch(`{BASE_URL}/blog/posts/${props.slug}`, {
         title: title.value,
         body: body.value,
       }, {
@@ -40,7 +41,7 @@ const savePost = async () => {
     }
   }else{
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/blog/posts/new", {
+      const response = await axios.post("{BASE_URL}/api/v1/blog/posts/new", {
         title: title.value,
         body: body.value,
       }, {
@@ -51,7 +52,7 @@ const savePost = async () => {
       const slug = response.data.slug;
 
       for (const tag of selectedTags.value) {
-        await axios.post(`http://localhost:8000/api/v1/blog/posts/${slug}/assign/${tag.slug}`, {}, {
+        await axios.post(`{BASE_URL}/api/v1/blog/posts/${slug}/assign/${tag.slug}`, {}, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -81,7 +82,7 @@ const removeTag = (tag: Tag) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get("http://localhost:8000/api/v1/blog/tags/fetch");
+    const response = await axios.get("{BASE_URL}/api/v1/blog/tags/fetch");
     allTags.value = response.data;
   } catch (error) {
     console.log(error);

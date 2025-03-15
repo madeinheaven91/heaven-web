@@ -8,6 +8,7 @@ import { useRouter } from 'vue-router';
 import { type Post } from '../shared/models.ts'
 
 const router = useRouter();
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 const props = defineProps<{
   posts: Post[],
@@ -18,7 +19,7 @@ const user = computed(() => store.user);
 
 const publish = async (slug: string) => {
   try {
-    axios.patch(`http://localhost:8000/api/v1/blog/posts/${slug}`, {
+    axios.patch(`{BASE_URL}/api/v1/blog/posts/${slug}`, {
       is_published: true
     }, {
       headers: {
