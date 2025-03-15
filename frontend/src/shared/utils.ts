@@ -21,7 +21,6 @@ async function delete_post(slug: string) {
 }
 
 async function load_profile(): Promise<User | null> {
-  console.log(import.meta.env);
   try {
     let profile = await axios
       .get(`${BASE_URL}/users/profile`, {
