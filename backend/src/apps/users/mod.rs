@@ -19,6 +19,11 @@ pub fn service() -> Scope {
         .route("/fetch/{id}", web::get().to(handlers::fetch_user))
         .route("/login", web::post().to(handlers::login))
         .service(
+            web::scope("/refresh")
+                .wrap(from_fn(refresh_mw))
+                .route("", web::get().to(handlers::refresh_token))
+        )
+        .service(
             web::scope("/new")
                 .wrap(from_fn(admin_access_mw))
                 .route("", web::post().to(handlers::new_user))
@@ -30,10 +35,5 @@ pub fn service() -> Scope {
                 .route("/profile", web::get().to(handlers::profile))
                 .route("/{id}", web::patch().to(handlers::update_user))
                 .route("/{id}", web::delete().to(handlers::delete_user))
-        )
-        .service(
-            web::scope("/refresh")
-                .wrap(from_fn(refresh_mw))
-                .route("", web::get().to(handlers::refresh_token))
         )
 }

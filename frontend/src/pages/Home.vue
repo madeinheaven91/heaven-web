@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import PostList from '../components/PostList.vue'
-import TagList from '../components/TagList.vue'
+import PostList from '@/widgets/PostList.vue'
+import TagList from '@/widgets/TagList.vue'
 import { onMounted, ref, computed } from 'vue'
-import { fetch_posts, fetch_tags } from '../shared/utils'
-import type { Post, Tag } from '../shared/models.ts'
+import { type Post, PostApi } from '@/entities/post';
+import { type Tag, TagApi } from '@/entities/tag';
 
 let posts = ref<Post[]>([]);
 let tags = ref<Tag[]>([]);
 
 onMounted(async () => {
-  let p = await fetch_posts();
-  let filtered = p.filter(ps => !ps.is_published);
+  let p = await PostApi.fetch_posts();
+  let filtered = p.filter((ps: Post) => ps.is_published);
   posts.value = filtered;
-  let t = await fetch_tags();
+  let t = await TagApi.fetch_tags();
   tags.value = t;
 })
 

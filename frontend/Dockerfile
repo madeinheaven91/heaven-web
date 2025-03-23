@@ -1,7 +1,6 @@
 FROM node:lts-alpine
 
-# Install `serve` instead of `http-server`
-RUN npm install -g serve
+RUN npm install -g http-server
 
 WORKDIR /app
 
@@ -14,4 +13,4 @@ RUN npm run build
 
 EXPOSE 8080
 
-CMD [ "serve", "-s", "dist" ]
+CMD [ "http-server", "dist" ]

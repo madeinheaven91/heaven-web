@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { remove_token } from '../shared/utils.ts'
-import { useAuthStore } from '../shared/store.ts'
+import { remove_token } from '@/shared/api'
+import { useAuthStore } from '@/shared/store.ts'
 import SmallModal from './SmallModal.vue'
 import LoginForm from './LoginForm.vue'
 

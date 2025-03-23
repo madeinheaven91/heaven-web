@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Tag } from '../shared/models.ts' 
+import type { Tag } from '@/entities/tag' 
 
 const props = defineProps<{
   tags: Tag[],

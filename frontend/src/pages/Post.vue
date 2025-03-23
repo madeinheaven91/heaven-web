@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { Post } from '../shared/models.ts';
+import { type Post, PostApi } from '@/entities/post';
+import type { User } from '@/entities/user'
 import { onMounted, ref, computed } from 'vue';
-import { fetch_post } from '../shared/utils';
 import { MdPreview, MdCatalog } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
-import type { User } from '../shared/models.ts'
-import { useAuthStore } from '../shared/store.ts'
-import DeleteButton from '../components/DeleteButton.vue';
+import { useAuthStore } from '@/shared/store.ts'
+import DeleteButton from '@/widgets/DeleteButton.vue';
 
 const store = useAuthStore();
 const user = computed(() => store.user);
@@ -16,7 +15,7 @@ const props = defineProps({
 });
 const post = ref<Post | null>(null);
 onMounted(async () => {
-  post.value = await fetch_post(props.slug as string);
+  post.value = await PostApi.fetch_post(props.slug as string);
 })
 
 </script>

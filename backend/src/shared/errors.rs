@@ -4,7 +4,6 @@ use actix_web::HttpResponse;
 use serde::{Deserialize, Serialize};
 
 use super::statics::LEXICON;
-
 #[derive(Debug, Serialize, Deserialize)]
 pub enum APIError {
     MissingToken,

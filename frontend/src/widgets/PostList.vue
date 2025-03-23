@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import TagList from './TagList.vue'
 import { useAuthStore } from '../shared/store.ts'
+import TagList from './TagList.vue'
 import DeleteButton from './DeleteButton.vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router';
-import { type Post } from '../shared/models.ts'
+import { useRouter } from 'vue-router'
+import { type Post } from '@/entities/post'
 
 const router = useRouter();
 const BASE_URL = import.meta.env.VITE_API_URL;

@@ -7,7 +7,7 @@ FROM rust:1.85-slim as build
 
 RUN apt-get update && \
   apt-get -y upgrade && \
-  apt-get -y install libpq-dev
+  apt-get -y install libpq5 libpq-dev
 
 # Setup working directory
 WORKDIR /usr/src/hw-backend

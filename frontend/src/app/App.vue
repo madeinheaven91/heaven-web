@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import Navbar from './components/Navbar.vue'
-import {  RouterView }  from 'vue-router'
-import { load_profile } from './shared/utils.ts'
+import Navbar from '@/widgets/Navbar.vue'
+import { UserApi } from '@/entities/user'
+import { RouterView }  from 'vue-router'
 import { onMounted } from 'vue'
-import { useAuthStore } from './shared/store.ts'
+import { useAuthStore } from '@/shared/store.ts'
 
 const store = useAuthStore();
 
 onMounted(async () => {
-  let profile = await load_profile();
+  let profile = await UserApi.load_profile();
   store.login(profile);
 })
 

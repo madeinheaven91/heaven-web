@@ -1,25 +1,13 @@
-// {
-// "compilerOptions": {
-//     "skipLibCheck": true,
-//     "paths": {
-//       "@/*": [
-//         "./*" // set path `@/*` as alias of `src/*`
-//       ]
-//     },
-//     "plugins": [
-//        {
-//          "name": "typescript-vue-plugin"
-//        }
-//     ]
-//   },
-//   "files": [],
-//   "references": [
-//     { "path": "./tsconfig.app.json" },
-//     { "path": "./tsconfig.node.json" }
-//   ]
-// }
 {
   "compilerOptions": {
+    "paths": {
+      "@/*": [ "./src/*" ]
+    },
+    "plugins": [
+       {
+         "name": "typescript-vue-plugin"
+       }
+    ],
     // Most non-library projects don't need to emit declarations.
     // So we add this option by default to make the config more friendly to most users.
     "noEmit": true,
@@ -73,6 +61,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     // See <https://github.com/vuejs/vue-cli/pull/5688>
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

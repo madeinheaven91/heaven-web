@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, onMounted, reactive, computed } from 'vue'
-import { MdEditor } from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
-import type { Tag, Post } from '../shared/models.ts'
-import { fetch_post } from '../shared/utils';
-import { useAuthStore } from '../shared/store.ts'
+import { MdEditor } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import { type Tag } from '@/entities/tag'
+import { type Post, PostApi } from '@/entities/post'
+import { useAuthStore } from '@/shared/store.ts'
 import axios from 'axios'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 const router = useRouter();
 
@@ -89,7 +89,7 @@ onMounted(async () => {
   }
 
   if (props.slug) {
-    let p = await fetch_post(props.slug as string);
+    let p = await PostApi.fetch_post(props.slug as string);
     Object.assign(post, p);
     title.value = post.title;
     body.value = post.body;

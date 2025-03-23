@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import SmallModal from './SmallModal.vue'
-import { delete_post } from '../shared/utils.ts'
+import { PostApi } from '@/entities/post'
 
 const props = defineProps({
   slug: String
@@ -8,7 +8,7 @@ const props = defineProps({
 
 const on_delete = async (slug: string) => {
   try {
-    await delete_post(slug);
+    await PostApi.delete_post(slug);
     alert("SUCCESS");
   }
   catch (error){

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { login } from '../shared/utils.ts';
-import { useAuthStore } from '../shared/store.ts'
+import { UserApi } from '@/entities/user';
+import { useAuthStore } from '@/shared/store.ts'
 
 // Reactive state
 const username = ref('');
@@ -13,7 +13,7 @@ const store = useAuthStore();
 const onSubmit = async () => {
   try {
     errorMessage.value = '';
-    const response = await login(username.value, password.value);
+    const response = await UserApi.login(username.value, password.value);
 
     store.login(response.user);
     localStorage.setItem("access_token", response.access_token);
