@@ -1,11 +1,11 @@
-FROM node:lts-alpine
+FROM node:23-alpine3.20
 
-RUN npm install -g http-server
 
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
+RUN npm install -g http-server
 
 COPY . .
 

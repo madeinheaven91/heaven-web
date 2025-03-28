@@ -1,7 +1,5 @@
-# Todo:
+# Vue 3 + TypeScript + Vite
 
-- [ ] поменять бутстрап на shadcn или чето такое
-- [ ] алерты поменять на красивые элементы
-- [ ] пофиксить назначение и удаление тегов в редакторе поста со слагом
-- [ ] заменить хардкоженые юрлы бекенда на настраиваемые через env переменные
+This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
+Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).

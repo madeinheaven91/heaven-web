@@ -1,3 +1,114 @@
-.font{
-  font-family: 'Roboto Slab';
+@import "tailwindcss";
+
+@font-face {
+  font-family: "NerdFontsSymbols Nerd Font";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/SymbolsNerdFontMono-Regular.ttf");
+}
+
+:root{
+  /* --bg: #211f1a; */
+  --bg: #171614;
+  --main: #bdeb5b;
+  --secondary: #54ebb6;
+  --highlight: #56e1e8;
+  --yellow: #fad234;
+  --red: #f03030;
+  --blue: #3086f0;
+
+  --small-l: 2px;
+
+  --f-xl: 1.8rem;
+  --f-2xl: 2.3rem;
+  --f-3xl: 2.75rem;
+  --f-4xl: 3rem;
+}
+
+body {
+  font-family: "Ubuntu Mono";
+  background-color: var(--bg);
+  color: var(--main);
+}
+
+.glow {
+  text-shadow: 0px 0px 7px var(--main);
+}
+.glow-box {
+  box-shadow: 0px 0px 7px 1px var(--main);
+}
+
+main {
+  padding: 0 4rem 0 4rem;
+}
+
+* {
+  font-size: 20px;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+h2 {
+  font-size: 2.75em;
+}
+h3 {
+  font-size: 2.3em;
+}
+h4 {
+  font-size: 1.8em;
+}
+
+p{
+  margin: 0.5rem 0 0.5rem 0;
+}
+
+a{
+  text-shadow: 0px 0px 5px var(--secondary);
+  color: var(--secondary);
+  text-decoration: underline;
+  transition: 0.2s;
+}
+
+a:hover{
+  cursor: pointer;
+  text-shadow: 0px 0px 15px var(--highlight);
+  color: var(--highlight);
+}
+
+hr{
+  margin: 1rem 0 1rem 0;
+
+}
+
+ul.markdown{
+  margin: 0.5rem 0 0.5rem 0;
+}
+ul.markdown li::before{
+  content: "# ";
+}
+
+.c-main{
+  color: var(--main);
+}
+
+.c-secondary{
+  color: var(--secondary);
+}
+
+.c-highlight{
+  color: var(--highlight);
+}
+
+.c-yellow{
+  color: var(--yellow);
+}
+
+.c-red{
+  color: var(--red);
+}
+
+.c-blue{
+  color: var(--blue);
 }
