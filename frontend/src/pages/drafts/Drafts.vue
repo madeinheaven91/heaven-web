@@ -4,12 +4,12 @@ import PostList from '@/widgets/post-list'
 import TagList from '@/widgets/tag-list'
 import { type Post, PostApi } from '@/entities/post'
 import { type Tag, TagApi } from '@/entities/tag'
-import { onMounted, ref, computed } from 'vue'
-import { useAuthStore } from '@/shared/store.ts'
+import { onMounted, ref } from 'vue'
+// import { useAuthStore } from '@/shared/store.ts'
 
-const store = useAuthStore();
-const user = computed(() => store.user);
-const isAuthenticated = computed(() => store.isAuthenticated);
+// const store = useAuthStore();
+// const user = computed(() => store.user);
+// const isAuthenticated = computed(() => store.isAuthenticated);
 
 const posts = ref<Post[]>([]);
 const tags = ref<Tag[]>([]);

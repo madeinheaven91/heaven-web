@@ -20,7 +20,7 @@ const isAuthenticated = computed(() => store.isAuthenticated);
       <li><RouterLink to='/blog'>
         <Logo/>
       </RouterLink></li>
-      <div v-if="isAuthenticated" class="list">
+      <div v-if="isAuthenticated && user" class="list">
         <RouterLink to='/blog/drafts'>
           <Button>Черновики</Button>
         </RouterLink>
@@ -28,12 +28,12 @@ const isAuthenticated = computed(() => store.isAuthenticated);
           <Button>Новый пост</Button>
         </RouterLink>
         <Button @click="store.logout">Выход</Button>
-        <p class="c-yellow">madeinheaven91</p>
+        <p class="c-yellow">{{ user.name }}</p>
       </div>
       <div v-else class="list">
         <Button @click="modalRef?.openModal()">Вход</Button>
         <Modal ref='modalRef'>
-          <LoginForm :onClose="modalRef?.closeModal"/>
+          <LoginForm :onClose="modalRef?.closeModal || (() => {})"/>
         </Modal>
       </div>
     </ul>

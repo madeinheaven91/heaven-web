@@ -47,12 +47,12 @@ onMounted(() => {
     <div class="flex flex-col items-end justify-between py-2">
       <p class="no-margin">{{ strDate }}</p>
       <span class="flex gap-2" v-if="isAuthenticated">
-        <Button v-if="user.id == props.post.author.id && !props.post.is_published"
+        <Button v-if="(user as User).id == props.post.author.id && !props.post.is_published"
           @click="onPublish(props.post.slug)">Опубликовать</Button>
-        <Button v-if="user.id == props.post.author.id">
+        <Button v-if="(user as User).id == props.post.author.id">
           <RouterLink class="edit" :to="`/blog/post/${props.post.slug}/edit`">Редактировать</RouterLink>
         </Button>
-        <DeleteButton v-if="user.id == props.post.author.id || user.is_staff" :slug="props.post.slug" />
+        <DeleteButton v-if="(user as User).id == props.post.author.id || (user as User).is_staff" :slug="props.post.slug" />
       </span>
     </div>
   </div>

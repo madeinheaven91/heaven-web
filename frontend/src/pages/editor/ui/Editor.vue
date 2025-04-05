@@ -14,7 +14,7 @@ const router = useRouter();
 const props = defineProps<{ slug: String | null }>();
 const post = reactive<Post>({} as Post);
 const store = useAuthStore();
-const user = computed(() => store.user);
+// const user = computed(() => store.user);
 const isAuthenticated = computed(() => store.isAuthenticated);
 
 const title = ref("");
@@ -28,7 +28,7 @@ const savePost = async () => {
   }
   if (props.slug) {
     try{
-      const response = await axios.patch(`${BASE_URL}/blog/posts/${props.slug}`, {
+      await axios.patch(`${BASE_URL}/blog/posts/${props.slug}`, {
         title: title.value,
         body: body.value,
       }, {
@@ -69,7 +69,7 @@ const savePost = async () => {
 
 const allTags = ref<Tag[]>([]);
 const selectedTags = ref<Tag[]>([]);
-const selectedTag = ref<Tag | null>(null);
+// const selectedTag = ref<Tag | null>(null);
 
 const addTag = (tag: Tag) => {
   if (!selectedTags.value.some(t => t.slug === tag.slug)) {

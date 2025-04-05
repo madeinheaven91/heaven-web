@@ -60,7 +60,7 @@ const onSubmit = async () => {
         <Button>
           <input type="submit" value="Войти" />
         </Button>
-        <Button @click="props.onClose">Закрыть</Button>
+        <Button @click="() => props.onClose">Закрыть</Button>
       </div>
     </form>
   </div>
