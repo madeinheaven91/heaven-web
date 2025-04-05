@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { UserApi } from "@/entities/user";
-import { useAuthStore } from "@/shared/store.ts";
 import Button from "@/shared/ui/button";
+import { useAuthStore } from "@/shared/store.ts";
+import { UserApi } from "@/entities/user";
+import { ref } from "vue";
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
 
 const username = ref("");
 const password = ref("");
@@ -22,7 +25,7 @@ const onSubmit = async () => {
     const response = await UserApi.login(username.value, password.value);
     store.login(response.user);
     localStorage.setItem("access_token", response.access_token);
-    // window.location.reload();
+    router.go(0);
   } catch (error) {
     errorMessage.value = "Неправильный логин или пароль!";
   }

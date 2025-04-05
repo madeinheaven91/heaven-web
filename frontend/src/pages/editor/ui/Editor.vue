@@ -3,7 +3,7 @@ import { ref, onMounted, reactive, computed } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import Header from '@/widgets/header'
-import { type Tag } from '@/entities/tag'
+import Button from '@/shared/ui/button'
 import { type Post, PostApi } from '@/entities/post'
 import { useAuthStore } from '@/shared/store.ts'
 import axios from 'axios'
@@ -27,7 +27,7 @@ const savePost = async () => {
     return;
   }
   if (props.slug) {
-    try{
+    try {
       await axios.patch(`${BASE_URL}/blog/posts/${props.slug}`, {
         title: title.value,
         body: body.value,
@@ -40,7 +40,7 @@ const savePost = async () => {
     } catch (error) {
       console.log(error);
     }
-  }else{
+  } else {
     try {
       const response = await axios.post(`${BASE_URL}/blog/posts/new`, {
         title: title.value,
@@ -52,13 +52,6 @@ const savePost = async () => {
       });
       const slug = response.data.slug;
 
-      for (const tag of selectedTags.value) {
-        await axios.post(`${BASE_URL}/blog/posts/${slug}/assign/${tag.slug}`, {}, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
-      }
       router.push(`/blog/post/${slug}`)
       alert("SUCCESS");
     } catch (error) {
@@ -67,28 +60,7 @@ const savePost = async () => {
   }
 }
 
-const allTags = ref<Tag[]>([]);
-const selectedTags = ref<Tag[]>([]);
-// const selectedTag = ref<Tag | null>(null);
-
-const addTag = (tag: Tag) => {
-  if (!selectedTags.value.some(t => t.slug === tag.slug)) {
-    selectedTags.value.push(tag);
-  }
-}
-
-const removeTag = (tag: Tag) => {
-  selectedTags.value = selectedTags.value.filter(t => t.slug != tag.slug)
-}
-
 onMounted(async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/blog/tags/fetch`);
-    allTags.value = response.data;
-  } catch (error) {
-    console.log(error);
-  }
-
   if (props.slug) {
     let p = await PostApi.fetch_post(props.slug as string);
     Object.assign(post, p);
@@ -99,49 +71,27 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Header/>
-  <div v-if="isAuthenticated">
-    <input type="text" v-model="title" class="text-wrap text-break fs-1"></input>
-    <p class="text-wrap text-break text-secondary fs-3">{{ store.user?.name }}</p>
+  <Header />
+  <main>
+    <div v-if="isAuthenticated">
+      <input type="text" placeholder="Название" v-model="title" class="text-wrap text-break fs-1"></input>
+      <p class="text-wrap text-break text-secondary fs-3">{{ store.user?.name }}</p>
 
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
-        aria-expanded="false">
-        Добавить теги
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-        <li v-for="tag in allTags" :key="tag.slug">
-          <a @click="addTag(tag)" class="badge mr-1" :style="{
-            textDecoration: 'none',
-            backgroundColor: '#' + tag.background_color,
-            color: '#' + tag.foreground_color
-          }">
-            {{ tag.name }}
-          </a>
-        </li>
-      </ul>
+      <hr />
+      <MdEditor v-model="body" language="en-US" />
+      <div class="mt-3 flex gap-2">
+        <Button @click="savePost">Сохранить</Button>
+        <Button @click="router.push('/blog')">Назад</Button>
+      </div>
     </div>
-
-    <div class="d-flex gap-2 mt-3">
-      <span v-for="tag in selectedTags" :key="tag.slug">
-        <a @click="removeTag(tag)" class="badge mr-1" :style="{
-          textDecoration: 'none',
-          backgroundColor: '#' + tag.background_color,
-          color: '#' + tag.foreground_color
-        }">
-          {{ tag.name }}
-        </a>
-      </span>
+    <div v-else>
+      СЮДА ТЕБЕ НЕЛЬЗЯ
     </div>
-
-    <hr />
-    <MdEditor v-model="body" language="en-US" />
-    <div class="mt-3 d-flex gap-2">
-      <a @click="savePost" class="btn btn-success">Сохранить</a>
-      <a onclick="history.back()" class="btn btn-primary">Назад</a>
-    </div>
-  </div>
-  <div v-else>
-    СЮДА ТЕБЕ НЕЛЬЗЯ
-  </div>
+  </main>
 </template>
+
+<style scoped>
+input {
+  font-size: var(--f-3xl);
+}
+</style>

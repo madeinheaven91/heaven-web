@@ -1,28 +1,35 @@
 <script setup lang="ts">
-import Header from '@/widgets/header'
-import { onMounted, ref } from 'vue'
+import Button from '@/shared/ui/button'
 import { type Post, PostApi} from '@/entities/post'
-// import { type Tag, TagApi } from '@/entities/tag'
+import { type Tag } from '@/entities/tag'
+import Header from '@/widgets/header'
+import TagList from '@/widgets/tag-list'
 import { DateLib } from '@/shared/lib'
 import { MdPreview } from 'md-editor-v3'
-import Button from '@/shared/ui/button'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
 
 const props = defineProps({
   slug: String
 });
+const tags = ref<Tag[]>([]);
 const post = ref<Post | null>(null);
 onMounted(async () => {
   if (!props.slug) return;
   let p = await PostApi.fetch_post(props.slug);
   // Object.assign(post, p);
   post.value = p;
+  tags.value = p.tags;
 })
 </script>
 
 <template>
   <Header/>
   <main v-if="post">
-    <h1 class="break-all">{{ post.title }}</h1>
+    <h1 class="break-all mt-5">{{ post.title }}</h1>
+    <TagList :tags="tags" />
     <hr>
     <h4>{{ post.author.name }}</h4>
     <p>Создано: {{ DateLib.toLocale(post.created_at) }}</p>
@@ -30,7 +37,7 @@ onMounted(async () => {
     <hr>
     <MdPreview v-model="post.body" language='en-US' preview-theme="heaven"/>
     <div class="my-5">
-      <Button onclick="history.back()">Назад</Button>
+      <Button @click="router.push('/blog')">Назад</Button>
     </div>
   </main>
   <main v-else>

@@ -16,6 +16,11 @@ const tags = ref<Tag[]>([]);
 onMounted(async () => {
   let ps = await PostApi.fetch_posts();
   posts.value = ps.filter((p: Post) => !p.is_published);
+  posts.value.sort((a: Post, b: Post) => {
+    let ts1 = Date.parse(a.created_at);
+    let ts2 = Date.parse(b.created_at);
+    return ts2 - ts1;
+  });
   tags.value = await TagApi.fetch_tags();
 })
 </script>
