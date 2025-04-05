@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./markdown";
 
 @font-face {
   font-family: "NerdFontsSymbols Nerd Font";
@@ -19,14 +20,21 @@
 
   --small-l: 2px;
 
+  --f-m: 1rem;
   --f-xl: 1.8rem;
   --f-2xl: 2.3rem;
   --f-3xl: 2.75rem;
-  --f-4xl: 3rem;
+  --f-4xl: 3.2rem;
+
+  --main-font: "Ubuntu Mono"
+}
+
+hr {
+  margin: 0 16px;
 }
 
 body {
-  font-family: "Ubuntu Mono";
+  font-family: var(--main-font);
   background-color: var(--bg);
   color: var(--main);
 }
@@ -39,25 +47,29 @@ body {
 }
 
 main {
-  padding: 0 4rem 0 4rem;
+  padding: 0 5rem;
 }
 
 * {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 h1 {
-  font-size: 3em;
+  font-size: var(--f-4xl);
+  line-height: var(--f-4xl);
 }
 
 h2 {
-  font-size: 2.75em;
+  font-size: var(--f-3xl);
+  line-height: var(--f-3xl);
 }
 h3 {
-  font-size: 2.3em;
+  font-size: var(--f-2xl);
+  line-height: var(--f-2xl);
 }
 h4 {
-  font-size: 1.8em;
+  font-size: var(--f-xl);
+  line-height: var(--f-xl);
 }
 
 p{
@@ -87,6 +99,13 @@ ul.markdown{
 }
 ul.markdown li::before{
   content: "# ";
+}
+
+*:focus{
+  outline-style: solid;
+  outline-width: 1px;
+  outline-color: var(--yellow);
+  outline-offset: 2px;
 }
 
 .c-main{

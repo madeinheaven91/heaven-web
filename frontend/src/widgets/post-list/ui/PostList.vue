@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { type Post } from '@/entities/post'
 import PostListItem from './PostListItem.vue'
-import { onMounted } from 'vue';
+import { useAuthStore } from '@/shared/store.ts'
+import { ref, computed } from 'vue'
+
+const modalRef = ref<InstanceType<typeof Modal> | null>(null);
+const store = useAuthStore();
+const user = computed(() => store.user);
+const isAuthenticated = computed(() => store.isAuthenticated);
 
 const props = defineProps({
   posts: Array<Post>
 });
-onMounted(() => {
-})
 </script>
 
 <template>
   <div>
-    <PostListItem v-if="props.posts !== null" v-for="post in props.posts" :post="post" />
+    <PostListItem v-if="props.posts.length !== 0" v-for="post in props.posts" :post="post" />
     <h1 v-else>Постов нет :(</h1>
   </div>
 </template>

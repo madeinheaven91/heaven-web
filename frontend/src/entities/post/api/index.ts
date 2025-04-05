@@ -17,3 +17,9 @@ export async function delete_post(slug: string) {
     return null;
   }
 }
+
+export async function publish(slug: string) {
+  return (await api_protected.patch(`/blog/posts/${slug}`, {
+    is_published: true
+  })).data;
+}

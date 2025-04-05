@@ -22,34 +22,36 @@ const onSubmit = async () => {
     const response = await UserApi.login(username.value, password.value);
     store.login(response.user);
     localStorage.setItem("access_token", response.access_token);
-    window.location.reload();
+    // window.location.reload();
   } catch (error) {
-    errorMessage.value = "Ошибка входа!";
+    errorMessage.value = "Неправильный логин или пароль!";
   }
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
-    <h3>Авторизация</h3>
+    <h3 class='text-center'>Авторизация</h3>
     <p v-if="errorMessage" style="color: var(--red)">{{ errorMessage }}</p>
     <form class="flex flex-col gap-3" @submit.prevent="onSubmit">
       <div class="flex gap-5">
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
           <label for="usernameInput">Имя</label>
           <label for="passwordInput">Пароль</label>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
           <input
             type="text"
             id="usernameInput"
             placeholder="Дмитрий Прудников"
+            class="input-field"
             v-model="username"
           />
           <input
             type="password"
             id="passwordInput"
             placeholder="12345"
+            class="input-field"
             v-model="password"
           />
         </div>
@@ -63,3 +65,17 @@ const onSubmit = async () => {
     </form>
   </div>
 </template>
+
+<style scoped>
+.input-field {
+  background-color: var(--bg);
+  color: var(--main);
+  border-bottom-width: 2px;
+  border-bottom-color: var(--main);
+}
+.input-field:focus{
+  outline-style: solid;
+  outline-width: 1px;
+  outline-color: var(--yellow);
+}
+</style>

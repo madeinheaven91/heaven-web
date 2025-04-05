@@ -21,9 +21,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
 });
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", handleKeydown);
+onUnmounted(() => { window.removeEventListener("keydown", handleKeydown);
 });
 
 // Expose function globally if needed

@@ -1,9 +1,9 @@
 export function toLocaleDate(input: string): string {
   const ts = Date.parse(input);
   const date = new Date(ts);
-  return date.toLocaleDateString("ru-RU", {
+  return date.toLocaleDateString("en-UK", {
     day: "numeric",
-    month: "long",
+    month: "numeric",
     year: "numeric",
   })
 }

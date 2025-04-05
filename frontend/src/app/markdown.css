@@ -1,0 +1,32 @@
+div.heaven-theme {
+  background-color: transparent;
+}
+
+div.heaven-theme :is(p, h1, h2, h3, h4, h5, h6) {
+  color: var(--main);
+  font-family: var(--main-font);
+  word-break: break-word;
+}
+
+
+div.heaven-theme h1 {
+  font-size: var(--f-4xl);
+  line-height: var(--f-4xl);
+  margin: 0.5rem 0;
+}
+
+div.heaven-theme h2 {
+  font-size: var(--f-3xl);
+  line-height: var(--f-3xl);
+  margin: 0.5rem 0;
+}
+div.heaven-theme h3 {
+  font-size: var(--f-2xl);
+  line-height: var(--f-2xl);
+  margin: 0.5rem 0;
+}
+div.heaven-theme h4 {
+  font-size: var(--f-xl);
+  line-height: var(--f-xl);
+  margin: 0.5rem 0;
+}
