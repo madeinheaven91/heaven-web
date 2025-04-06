@@ -74,7 +74,7 @@ onMounted(async () => {
   <Header />
   <main>
     <div v-if="isAuthenticated">
-      <input type="text" placeholder="Название" v-model="title" class="text-wrap text-break fs-1"></input>
+      <input type="text" placeholder="Название" v-model="title" class="text-wrap text-break fs-1 w-full"></input>
       <p class="text-wrap text-break text-secondary fs-3">{{ store.user?.name }}</p>
 
       <hr />

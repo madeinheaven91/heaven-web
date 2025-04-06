@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import Button from '@/shared/ui/button'
+import DeleteButton from "@/shared/ui/delete-button";
 import { type Post, PostApi} from '@/entities/post'
 import { type Tag } from '@/entities/tag'
+import { type User } from "@/entities/user";
 import Header from '@/widgets/header'
 import TagList from '@/widgets/tag-list'
 import { DateLib } from '@/shared/lib'
 import { MdPreview } from 'md-editor-v3'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useAuthStore } from "@/shared/store.ts";
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
+const store = useAuthStore();
+const user = computed(() => store.user);
 
 const props = defineProps({
   slug: String
@@ -29,15 +34,19 @@ onMounted(async () => {
   <Header/>
   <main v-if="post">
     <h1 class="break-all mt-5">{{ post.title }}</h1>
-    <TagList :tags="tags" />
+    <TagList class="mt-3" :tags="tags" />
     <hr>
     <h4>{{ post.author.name }}</h4>
-    <p>Создано: {{ DateLib.toLocale(post.created_at) }}</p>
-    <p v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
+    <p class="my-0">Создано: {{ DateLib.toLocale(post.created_at) }}</p>
+    <p class="my-0" v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
     <hr>
     <MdPreview v-model="post.body" language='en-US' preview-theme="heaven"/>
-    <div class="my-5">
+    <div class="my-5 flex gap-3">
       <Button @click="router.push('/blog')">Назад</Button>
+      <Button v-if="(user as User).id == post.author.id">
+        <RouterLink class="edit" :to="`/blog/post/${props.slug}/edit`">Редактировать</RouterLink>
+      </Button>
+        <DeleteButton v-if="(user as User).id == post.author.id || (user as User).is_staff" :slug="slug" />
     </div>
   </main>
   <main v-else>
@@ -46,11 +55,15 @@ onMounted(async () => {
 </template>
 
 <style lang="css" scoped>
-p {
-  margin: 0;
-}
-
 .md-editor-previewOnly {
   background-color: transparent;
 }
+
+.edit {
+  text-decoration: none;
+  color: var(--main);
+  text-shadow: none;
+  font-size: var(--f-m);
+}
+
 </style>

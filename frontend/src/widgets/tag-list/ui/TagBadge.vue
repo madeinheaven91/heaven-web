@@ -2,29 +2,22 @@
 import { type Tag } from '@/entities/tag';
 
 const props = defineProps<{ tag: Tag, clickable: Boolean }>();
-
 </script>
 
 <template>
-  <a v-if="props.clickable" class="tag" :href="`./?tag=${props.tag.slug}`" :style="{ color: `#${props.tag.background_color}` }">
-    {{ props.tag.name }}
-  </a>
-  <span v-else class="tag" :style="{ color: `#${props.tag.background_color}` }">
-    {{ props.tag.name }}
-  </span>
+  <div class="tag px-2 rounded-md text-center"  :style="{ backgroundColor: `#${props.tag.background_color}`, color: `#${props.tag.foreground_color}` }">
+    <a v-if="props.clickable" :href="`./?tag=${props.tag.slug}`" :style="{ color: `#${props.tag.foreground_color}` }">
+      {{ props.tag.name }}
+    </a>
+    <template v-else>
+      {{ props.tag.name }}
+    </template>
+  </div>
 </template>
 
 <style scoped lang="css">
 a{
   text-decoration: none;
   text-shadow: none;
-}
-.tag::after{
-  content: ")";
-  padding-left: var(--small-l);
-}
-.tag::before{
-  content: "(";
-  padding-right: var(--small-l);
 }
 </style>

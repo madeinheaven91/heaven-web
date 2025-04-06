@@ -1,5 +1,6 @@
 <script setup lang="ts">
-
+// FIXME: 
+// make tabbable
 </script>
 
 <template>
@@ -26,8 +27,5 @@ span {
 
 span:hover {
   border-bottom-color: var(--main);
-}
-
-span:active {
 }
 </style>

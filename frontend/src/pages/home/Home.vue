@@ -27,7 +27,7 @@ onMounted(async () => {
     <!-- <p><i class="nf nf-linux-archlinux"></i> ~/rust > <BlinkingCursor/></p> -->
     <hr>
     <h4 class='glow px-5'>Теги</h4>
-    <TagList class='px-5' :tags="tags" clickable />
+    <TagList class='px-5 mt-3' :tags="tags" clickable />
     <hr>
     <PostList :posts="posts" />
   </main>

@@ -33,12 +33,12 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3">
+  <div class="flex flex-col gap-3 px-10">
     <h3 class='text-center'>Авторизация</h3>
     <p v-if="errorMessage" style="color: var(--red)">{{ errorMessage }}</p>
     <form class="flex flex-col gap-3" @submit.prevent="onSubmit">
-      <div class="flex gap-5">
-        <div class="flex flex-col gap-1">
+      <div class="flex gap-2">
+        <div class="flex flex-col gap-1 items-end">
           <label for="usernameInput">Имя</label>
           <label for="passwordInput">Пароль</label>
         </div>
@@ -53,7 +53,7 @@ const onSubmit = async () => {
           <input
             type="password"
             id="passwordInput"
-            placeholder="12345"
+            placeholder="coolBob123"
             class="input-field"
             v-model="password"
           />
@@ -80,5 +80,8 @@ const onSubmit = async () => {
   outline-style: solid;
   outline-width: 1px;
   outline-color: var(--yellow);
+}
+label::after {
+  content: ":";
 }
 </style>

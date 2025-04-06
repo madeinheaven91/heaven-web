@@ -24,19 +24,27 @@ const on_delete = async (slug: string) => {
 <template>
   <Button class="red-btn" @click="modalRef?.openModal()">Удалить</Button>
   <Modal ref="modalRef">
-    <div class="d-flex mt-3 justify-content-between">
-      <Button class="red-btn" @click="async () => await on_delete(props.slug as string)">Удалить</Button>
-      <Button @click="modalRef?.closeModal()"> Отмена </Button>
+    <div class="flex flex-col justify-between items-center">
+      <h3>Удалить?</h3>
+      <div class="flex justify-around mt-3">
+        <Button class=" btn red-btn" @click="async () => await on_delete(props.slug as string)">Удалить</Button>
+        <Button class="btn" @click="modalRef?.closeModal()"> Отмена </Button>
+      </div>
     </div>
   </Modal>
 </template>
 
 <style scoped>
+.btn {
+  font-size: 20px;
+}
+
 .red-btn {
   color: var(--red);
 }
 
 .red-btn:hover {
   border-bottom-color: var(--red);
+  cursor: pointer;
 }
 </style>
