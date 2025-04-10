@@ -5,7 +5,7 @@ const props = defineProps<{ tag: Tag, clickable: Boolean }>();
 </script>
 
 <template>
-  <div class="tag px-2 rounded-md text-center"  :style="{ backgroundColor: `#${props.tag.background_color}`, color: `#${props.tag.foreground_color}` }">
+  <div class="px-2 rounded-md text-center text-sm lg:text-base"  :style="{ backgroundColor: `#${props.tag.background_color}`, color: `#${props.tag.foreground_color}` }">
     <a v-if="props.clickable" :href="`./?tag=${props.tag.slug}`" :style="{ color: `#${props.tag.foreground_color}` }">
       {{ props.tag.name }}
     </a>

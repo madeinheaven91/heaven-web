@@ -27,11 +27,11 @@ onMounted(async () => {
 
 <template>
   <Header/>
-  <main>
-    <h3 class='glow px-5 mt-3'>Ченовики</h3>
+  <main class="px-5 lg:px-10">
+    <h3 class='glow px-5 mt-3 text-2xl lg:text-4xl'>Черновики</h3>
     <!-- <p><i class="nf nf-linux-archlinux"></i> ~/rust > <BlinkingCursor/></p> -->
     <hr>
-    <h4 class='glow px-5'>Теги</h4>
+    <h4 class='glow px-5 text-xl lg:text-3xl'>Теги</h4>
     <TagList class='px-5' :tags="tags" clickable/>
     <hr>
     <PostList :posts="posts"/>

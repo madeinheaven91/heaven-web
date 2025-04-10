@@ -1,129 +1,107 @@
 @import "tailwindcss";
 @import "./markdown";
 
-@font-face {
-  font-family: "NerdFontsSymbols Nerd Font";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./fonts/SymbolsNerdFontMono-Regular.ttf");
+
+@theme {
+  --font-display: "Ubuntu Mono"
 }
 
-:root{
-  /* --bg: #211f1a; */
-  --bg: #171614;
-  --main: #bdeb5b;
-  --secondary: #54ebb6;
-  --highlight: #56e1e8;
-  --yellow: #fad234;
-  --red: #f03030;
-  --blue: #3086f0;
+@layer base{
+  @font-face {
+    font-family: "NerdFontsSymbols Nerd Font";
+    font-style: normal;
+    font-weight: 400;
+    src: url("./fonts/SymbolsNerdFontMono-Regular.ttf");
+  }
+  :root{
+    /* --bg: #211f1a; */
+    --bg: #171614;
+    --main: #bdeb5b;
+    --secondary: #54ebb6;
+    --highlight: #56e1e8;
+    --yellow: #fad234;
+    --red: #f03030;
+    --blue: #3086f0;
 
-  --small-l: 2px;
+    --small-l: 2px;
 
-  --f-m: 1rem;
-  --f-xl: 1.8rem;
-  --f-2xl: 2.3rem;
-  --f-3xl: 2.75rem;
-  --f-4xl: 3.2rem;
+    --f-m: 1rem;
+    --f-xl: 1.8rem;
+    --f-2xl: 2.3rem;
+    --f-3xl: 2.75rem;
+    --f-4xl: 3.2rem;
 
-  --main-font: "Ubuntu Mono"
+    --main-font: "Ubuntu Mono"
+  }
+
+  body {
+    font-family: var(--main-font);
+    background-color: var(--bg);
+    color: var(--main);
+  }
+
+  hr{
+    margin: 0.5rem 0;
+  }
+
+  *:focus{
+    outline-style: solid;
+    outline-width: 1px;
+    outline-color: var(--yellow);
+    outline-offset: 2px;
+  }
+
 }
 
-hr {
-  margin: 0 16px;
+@layer components {
+  .glow {
+    text-shadow: 0px 0px 7px var(--main);
+  }
+  .glow-box {
+    box-shadow: 0px 0px 7px 1px var(--main);
+  }
+
 }
 
-body {
-  font-family: var(--main-font);
-  background-color: var(--bg);
-  color: var(--main);
-}
-
-.glow {
-  text-shadow: 0px 0px 7px var(--main);
-}
-.glow-box {
-  box-shadow: 0px 0px 7px 1px var(--main);
-}
-
-main {
-  padding: 0 5rem;
-}
-
-* {
-  font-size: 16px;
-}
-
-h1 {
-  font-size: var(--f-4xl);
-  line-height: var(--f-4xl);
-}
-
-h2 {
-  font-size: var(--f-3xl);
-  line-height: var(--f-3xl);
-}
-h3 {
-  font-size: var(--f-2xl);
-  line-height: var(--f-2xl);
-}
-h4 {
-  font-size: var(--f-xl);
-  line-height: var(--f-xl);
-}
-
-a{
-  text-shadow: 0px 0px 5px var(--secondary);
-  color: var(--secondary);
-  text-decoration: underline;
-  transition: 0.2s;
-}
-
+@layer utilities {
+  a{
+    text-shadow: 0px 0px 5px var(--secondary);
+    color: var(--secondary);
+    text-decoration: underline;
+    transition: 0.2s;
+  }
 a:hover{
-  cursor: pointer;
-  text-shadow: 0px 0px 15px var(--highlight);
-  color: var(--highlight);
-}
+    cursor: pointer;
+    text-shadow: 0px 0px 15px var(--highlight);
+    color: var(--highlight);
+  }
 
-hr{
-  margin: 1rem 0 1rem 0;
+  .c-main{
+    color: var(--main);
+  }
 
-}
+  .c-secondary{
+    color: var(--secondary);
+  }
 
-ul.markdown{
-  margin: 0.5rem 0 0.5rem 0;
-}
-ul.markdown li::before{
-  content: "# ";
-}
+  .c-highlight{
+    color: var(--highlight);
+  }
 
-*:focus{
-  outline-style: solid;
-  outline-width: 1px;
-  outline-color: var(--yellow);
-  outline-offset: 2px;
-}
+  .c-yellow{
+    color: var(--yellow);
+  }
 
-.c-main{
-  color: var(--main);
-}
+  .c-red{
+    color: var(--red);
+  }
 
-.c-secondary{
-  color: var(--secondary);
-}
+  .c-blue{
+    color: var(--blue);
+  }
 
-.c-highlight{
-  color: var(--highlight);
-}
-
-.c-yellow{
-  color: var(--yellow);
-}
-
-.c-red{
-  color: var(--red);
-}
-
-.c-blue{
-  color: var(--blue);
+  /* https://isotropic.co/tool/hex-color-to-css-filter/ */
+  .filter-main {
+    filter: invert(100%) sepia(47%) saturate(2438%) hue-rotate(18deg) brightness(96%) contrast(92%);
+  }
 }

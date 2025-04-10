@@ -32,27 +32,29 @@ onMounted(async () => {
 
 <template>
   <Header/>
-  <main v-if="post">
-    <h1 class="break-all mt-5">{{ post.title }}</h1>
-    <TagList class="mt-3" :tags="tags" />
-    <hr>
-    <h4>{{ post.author.name }}</h4>
-    <p class="my-0">Создано: {{ DateLib.toLocale(post.created_at) }}</p>
-    <p class="my-0" v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
-    <hr>
-    <MdPreview v-model="post.body" language='en-US' preview-theme="heaven"/>
-    <div class="my-5 flex gap-3">
-      <Button @click="router.push('/blog')">Назад</Button>
-      <template v-if="user">
-        <Button v-if="(user as User).id == post.author.id">
-          <RouterLink class="edit" :to="`/blog/post/${props.slug}/edit`">Редактировать</RouterLink>
-        </Button>
-        <DeleteButton v-if="(user as User).id == post.author.id || (user as User).is_staff" :slug="slug" />
-      </template>
-    </div>
-  </main>
-  <main v-else>
-    <h1>Пост не найден</h1>
+  <main class="px-5 lg:px-10">
+    <template v-if="post">
+      <h1 class="break-all mt-5 text-4xl">{{ post.title }}</h1>
+      <TagList class="mt-3" :tags="tags" />
+      <hr>
+      <h4 class="text-3xl">{{ post.author.name }}</h4>
+      <p class="my-0">Создано: {{ DateLib.toLocale(post.created_at) }}</p>
+      <p class="my-0" v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
+      <hr>
+      <MdPreview v-model="post.body" language='en-US' preview-theme="heaven"/>
+      <div class="my-5 flex gap-3">
+        <Button @click="router.push('/blog')">Назад</Button>
+        <template v-if="user">
+          <Button v-if="(user as User).id == post.author.id">
+            <RouterLink class="edit" :to="`/blog/post/${props.slug}/edit`">Редактировать</RouterLink>
+          </Button>
+          <DeleteButton v-if="(user as User).id == post.author.id || (user as User).is_staff" :slug="slug" />
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <h1>Пост не найден</h1>
+    </template>
   </main>
 </template>
 

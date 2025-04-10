@@ -14,7 +14,41 @@ const isAuthenticated = computed(() => store.isAuthenticated);
 </script>
 
 <template>
-  <header class="">
+  <!-- MOBILE -->
+  <header class="block lg:hidden">
+    <div class="flex justify-between items-center px-5 pt-2">
+      <RouterLink to='/blog'>
+        <Logo/>
+      </RouterLink>
+      <img class="filter-main" width="32px" src="/public/icons/list.svg"/>
+    </div>
+    <ul class="px-5 hidden">
+      <!-- ROUTER -->
+      <li><RouterLink to='/blog'>
+        <Logo/>
+      </RouterLink></li>
+      <div v-if="isAuthenticated && user" class="list">
+        <RouterLink to='/blog/drafts'>
+          <Button>Черновики</Button>
+        </RouterLink>
+        <RouterLink to='/blog/new'>
+          <Button>Новый пост</Button>
+        </RouterLink>
+        <Button @click="store.logout">Выход</Button>
+        <p class="c-yellow">{{ user.name }}</p>
+      </div>
+      <div v-else class="list">
+        <Button @click="modalRef?.openModal()">Вход</Button>
+        <Modal ref='modalRef'>
+          <LoginForm :onClose="modalRef?.closeModal || (() => {})"/>
+        </Modal>
+      </div>
+    </ul>
+    <hr class="hr mx-auto mt-1 w-[90%]">
+    <hr class="hr mx-auto w-[85%]">
+  </header>
+  <!-- PC -->
+  <header class="hidden lg:block">
     <ul class="px-10 items-center list">
       <!-- ROUTER -->
       <li><RouterLink to='/blog'>
@@ -37,8 +71,8 @@ const isAuthenticated = computed(() => store.isAuthenticated);
         </Modal>
       </div>
     </ul>
-  <hr class="hr w-[90%]">
-  <hr class="hr w-[85%]">
+    <hr class="hr mx-auto w-[90%]">
+    <hr class="hr mx-auto w-[85%]">
   </header>
 </template>
 
@@ -51,8 +85,5 @@ a {
 .list {
   @apply flex justify-start flex-row items-center;
   gap: 1rem;
-}
-.hr{
-  margin: 5px auto;
 }
 </style>
