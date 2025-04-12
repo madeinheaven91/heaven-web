@@ -2,7 +2,7 @@
 import Button from "@/shared/ui/button";
 import { useAuthStore } from "@/shared/store.ts";
 import { UserApi } from "@/entities/user";
-import { onMounted, ref, type PropType } from "vue";
+import { ref, type PropType } from "vue";
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
