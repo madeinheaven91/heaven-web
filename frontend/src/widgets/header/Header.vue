@@ -3,14 +3,17 @@ import Button from '@/shared/ui/button'
 import Logo from '@/shared/ui/logo'
 import Modal from '@/shared/ui/modal'
 import LoginForm from '@/widgets/login-form'
+import Sidebar from './Sidebar.vue'
 import { RouterLink } from "vue-router";
 import { useAuthStore } from '@/shared/store.ts'
 import { ref, computed } from 'vue'
 
-const modalRef = ref<InstanceType<typeof Modal> | null>(null);
 const store = useAuthStore();
 const user = computed(() => store.getUser);
 const isAuthenticated = computed(() => store.isAuthenticated);
+const modalRef = ref<InstanceType<typeof Modal> | null>(null);
+
+const sidebarIsOpen = ref(false)
 </script>
 
 <template>
@@ -20,30 +23,9 @@ const isAuthenticated = computed(() => store.isAuthenticated);
       <RouterLink to='/blog'>
         <Logo/>
       </RouterLink>
-      <img class="filter-main" width="32px" src="/public/icons/list.svg"/>
+      <img class="filter-main cursor-pointer" @click="sidebarIsOpen = !sidebarIsOpen" width="32px" src="/public/icons/list.svg"/>
+      <Sidebar v-if="sidebarIsOpen" @toggleOpen="sidebarIsOpen = false"/>
     </div>
-    <ul class="px-5 hidden">
-      <!-- ROUTER -->
-      <li><RouterLink to='/blog'>
-        <Logo/>
-      </RouterLink></li>
-      <div v-if="isAuthenticated && user" class="list">
-        <RouterLink to='/blog/drafts'>
-          <Button>Черновики</Button>
-        </RouterLink>
-        <RouterLink to='/blog/new'>
-          <Button>Новый пост</Button>
-        </RouterLink>
-        <Button @click="store.logout">Выход</Button>
-        <p class="c-yellow">{{ user.name }}</p>
-      </div>
-      <div v-else class="list">
-        <Button @click="modalRef?.openModal()">Вход</Button>
-        <Modal ref='modalRef'>
-          <LoginForm :onClose="modalRef?.closeModal || (() => {})"/>
-        </Modal>
-      </div>
-    </ul>
     <hr class="hr mx-auto mt-1 w-[90%]">
     <hr class="hr mx-auto w-[85%]">
   </header>
@@ -67,7 +49,7 @@ const isAuthenticated = computed(() => store.isAuthenticated);
       <div v-else class="list">
         <Button @click="modalRef?.openModal()">Вход</Button>
         <Modal ref='modalRef'>
-          <LoginForm :onClose="modalRef?.closeModal || (() => {})"/>
+          <LoginForm :onClose="() => modalRef?.closeModal()"/>
         </Modal>
       </div>
     </ul>

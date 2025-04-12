@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 
+const emit = defineEmits(['toggleOpen'])
 const isOpen = ref(false);
 
 const openModal = () => {
@@ -11,7 +12,6 @@ const closeModal = () => {
   isOpen.value = false;
 };
 
-// Close modal when Escape key is pressed
 const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === "Escape") {
     closeModal();
@@ -21,7 +21,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
 });
-onUnmounted(() => { window.removeEventListener("keydown", handleKeydown);
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeydown);
 });
 
 // Expose function globally if needed
@@ -29,16 +30,16 @@ defineExpose({ openModal, closeModal });
 </script>
 
 <template>
-  <div v-show="isOpen" class="modal_wrapper">
+  <div v-if="isOpen" class="modal_wrapper">
     <div class="modal p-3">
-      <slot />
+      <slot/>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* FIXME: absolute position */
 .modal {
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,10 +49,11 @@ defineExpose({ openModal, closeModal });
   border-style: double;
   z-index: 1200;
   background-color: var(--bg);
+  font-size: 1em !important;
 }
 
 .modal_wrapper {
-  position: absolute;
+  position: fixed;
   background-color: rgba(0, 0, 0, 0.4);
   width: 100vw;
   height: 100vh;

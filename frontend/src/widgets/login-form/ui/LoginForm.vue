@@ -2,7 +2,7 @@
 import Button from "@/shared/ui/button";
 import { useAuthStore } from "@/shared/store.ts";
 import { UserApi } from "@/entities/user";
-import { ref } from "vue";
+import { onMounted, ref, type PropType } from "vue";
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
@@ -14,7 +14,7 @@ const store = useAuthStore();
 
 const props = defineProps({
   onClose: {
-    type: Function,
+    type: Function as PropType<() => void>,
     required: true,
   },
 });
@@ -63,7 +63,7 @@ const onSubmit = async () => {
         <Button>
           <input type="submit" value="Войти" />
         </Button>
-        <Button @click="() => props.onClose">Закрыть</Button>
+        <Button @click="props.onClose">Закрыть</Button>
       </div>
     </form>
   </div>
