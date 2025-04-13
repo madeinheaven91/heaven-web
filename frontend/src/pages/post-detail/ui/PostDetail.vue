@@ -35,11 +35,11 @@ onMounted(async () => {
   <main class="px-5 lg:px-10">
     <template v-if="post">
       <h1 class="break-normal mt-5 text-3xl lg:text-4xl">{{ post.title }}</h1>
-      <TagList class="mt-3" :tags="tags" />
+      <TagList class="my-3" :tags="tags" />
       <hr>
       <h4 class="text-2xl lg:text-3xl">{{ post.author.name }}</h4>
-      <p class="my-0">Создано: {{ DateLib.toLocale(post.created_at) }}</p>
-      <p class="my-0" v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
+      <p class="my-0 text-xs italic lg:text-base">Создано: {{ DateLib.toLocale(post.created_at) }}</p>
+      <p class="my-0 text-xs italic lg:text-base" v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
       <hr>
       <MdPreview v-model="post.body" language='en-US' preview-theme="heaven" class="lg:text-base"/>
       <div class="my-5 flex gap-3">
