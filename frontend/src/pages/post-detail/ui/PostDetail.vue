@@ -34,14 +34,14 @@ onMounted(async () => {
   <Header/>
   <main class="px-5 lg:px-10">
     <template v-if="post">
-      <h1 class="break-all mt-5 text-4xl">{{ post.title }}</h1>
+      <h1 class="break-normal mt-5 text-3xl lg:text-4xl">{{ post.title }}</h1>
       <TagList class="mt-3" :tags="tags" />
       <hr>
-      <h4 class="text-3xl">{{ post.author.name }}</h4>
+      <h4 class="text-2xl lg:text-3xl">{{ post.author.name }}</h4>
       <p class="my-0">Создано: {{ DateLib.toLocale(post.created_at) }}</p>
       <p class="my-0" v-if="post.updated_at">Обновлено: {{ DateLib.toLocale(post.updated_at) }}</p>
       <hr>
-      <MdPreview v-model="post.body" language='en-US' preview-theme="heaven"/>
+      <MdPreview v-model="post.body" language='en-US' preview-theme="heaven" class="lg:text-base"/>
       <div class="my-5 flex gap-3">
         <Button @click="router.push('/blog')">Назад</Button>
         <template v-if="user">
@@ -69,5 +69,4 @@ onMounted(async () => {
   text-shadow: none;
   font-size: var(--f-m);
 }
-
 </style>

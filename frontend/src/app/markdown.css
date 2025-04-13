@@ -1,34 +1,29 @@
+div.heaven-theme * {
+  z-index: 0;
+}
+
 div.heaven-theme {
   background-color: transparent;
 }
 
-div.heaven-theme :is(p, h1, h2, h3, h4, h5, h6) {
+div.heaven-theme :is(p, h1, h2, h3, h4, h5, h6, li) {
   color: var(--main);
   font-family: var(--main-font);
   word-break: break-word;
 }
 
-
 div.heaven-theme h1 {
-  font-size: var(--f-4xl);
-  line-height: var(--f-4xl);
-  margin: 0.5rem 0;
+  @apply my-1 text-4xl lg:text-5xl
 }
 
 div.heaven-theme h2 {
-  font-size: var(--f-3xl);
-  line-height: var(--f-3xl);
-  margin: 0.5rem 0;
+  @apply my-1 text-3xl lg:text-4xl
 }
 div.heaven-theme h3 {
-  font-size: var(--f-2xl);
-  line-height: var(--f-2xl);
-  margin: 0.5rem 0;
+  @apply my-1 text-2xl lg:text-3xl
 }
 div.heaven-theme h4 {
-  font-size: var(--f-xl);
-  line-height: var(--f-xl);
-  margin: 0.5rem 0;
+  @apply my-1 text-xl lg:text-2xl
 }
 
 div.heaven-theme a{
@@ -42,4 +37,17 @@ div.heaven-theme a:hover{
   cursor: pointer;
   text-shadow: 0px 0px 15px var(--highlight);
   color: var(--highlight);
+}
+
+div.heaven-theme ul {
+  @apply pl-3
+}
+
+div.heaven-theme li::before {
+  content: "- ";
+}
+
+div.heaven-theme blockquote {
+  @apply py-2 my-2 border-l-(--secondary) border-l-8;
+  background-color: var(--bg-darker);
 }

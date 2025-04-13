@@ -23,8 +23,8 @@ const sidebarIsOpen = ref(false)
       <RouterLink to='/blog'>
         <Logo/>
       </RouterLink>
-      <img class="filter-main cursor-pointer" @click="sidebarIsOpen = !sidebarIsOpen" width="32px" src="/public/icons/list.svg"/>
       <Sidebar v-if="sidebarIsOpen" @toggleOpen="sidebarIsOpen = false"/>
+      <img class="filter-main cursor-pointer" @click="sidebarIsOpen = !sidebarIsOpen" width="32px" src="/public/icons/list.svg"/>
     </div>
     <hr class="hr mx-auto mt-1 w-[90%]">
     <hr class="hr mx-auto w-[85%]">

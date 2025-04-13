@@ -22,7 +22,7 @@ const toggleOpen = () => {
       emit('toggleOpen')
       isClosing.value = false
     }, 300);
-    
+
   }
 }
 const toggleLogin = () => {
@@ -44,8 +44,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="absolute left-0 top-0 w-full h-full bg-black opacity-50"></div>
-  <div class="sidebar p-5 absolute z-0 h-full border-l-2 text-2xl" :class="{ 'slide-out': isClosing }">
+  <div class="fixed left-0 z-9 top-0 w-full h-full bg-black opacity-50"></div>
+  <div class="sidebar p-5 fixed z-10 h-full border-l-2 text-2xl" :class="{ 'slide-out': isClosing }">
     <img class="filter-main cursor-pointer mb-5" @click="toggleOpen" width="32px" src="/public/icons/close.svg" />
     <!-- ROUTER -->
     <div v-if="isAuthenticated && user" class="list">
@@ -73,6 +73,7 @@ a {
   text-shadow: none;
   color: var(--main);
 }
+
 .list {
   @apply flex justify-start flex-col items-start;
   gap: 1rem;
@@ -84,6 +85,7 @@ a {
   background-color: var(--bg);
   animation: slide-in 0.3s;
 }
+
 .slide-out {
   animation: slide-out 0.3s forwards;
 }
@@ -99,7 +101,12 @@ a {
 }
 
 @keyframes slide-out {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 </style>
