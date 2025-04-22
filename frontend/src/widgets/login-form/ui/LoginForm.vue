@@ -34,7 +34,7 @@ const onSubmit = async () => {
 
 <template>
   <div class="flex flex-col gap-3 px-10">
-    <h3 class='text-center'>Авторизация</h3>
+    <h3 class='text-center text-3xl'>Авторизация</h3>
     <p v-if="errorMessage" style="color: var(--red)">{{ errorMessage }}</p>
     <form class="flex flex-col gap-3" @submit.prevent="onSubmit">
       <div class="flex gap-2">

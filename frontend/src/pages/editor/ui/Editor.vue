@@ -72,7 +72,7 @@ onMounted(async () => {
 
 <template>
   <Header />
-  <main>
+  <main class="px-5 lg:px-50">
     <div v-if="isAuthenticated">
       <input type="text" placeholder="Название" v-model="title" class="text-wrap text-break fs-1 w-full"></input>
       <p class="text-wrap text-break text-secondary fs-3">{{ store.user?.name }}</p>

@@ -27,7 +27,7 @@ onMounted(async () => {
 
 <template>
   <Header/>
-  <main class="px-5 lg:px-10">
+  <main class="px-5 lg:px-[5rem]">
     <h3 class='glow px-5 mt-3 text-2xl lg:text-4xl'>Черновики</h3>
     <!-- <p><i class="nf nf-linux-archlinux"></i> ~/rust > <BlinkingCursor/></p> -->
     <hr>

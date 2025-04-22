@@ -10,20 +10,28 @@ div.heaven-theme :is(p, h1, h2, h3, h4, h5, h6, li) {
   color: var(--main);
   font-family: var(--main-font);
   word-break: break-word;
+  @apply lg:text-xl text-lg
+}
+
+div.heaven-theme p {
+    @apply mt-3 text-lg/tight lg:text-xl/tight
+}
+div.heaven-theme p:first-child {
+    @apply mt-0
 }
 
 div.heaven-theme h1 {
-  @apply my-1 text-4xl lg:text-5xl
+  @apply mt-5 mb-0 text-4xl lg:text-5xl
 }
 
 div.heaven-theme h2 {
-  @apply my-1 text-3xl lg:text-4xl
+  @apply mt-5 mb-0 text-3xl lg:text-4xl
 }
 div.heaven-theme h3 {
-  @apply my-1 text-2xl lg:text-3xl
+  @apply mt-5 mb-0 text-2xl lg:text-3xl
 }
 div.heaven-theme h4 {
-  @apply my-1 text-xl lg:text-2xl
+  @apply mt-5 mb-0 text-xl lg:text-2xl
 }
 
 div.heaven-theme a{
@@ -48,6 +56,6 @@ div.heaven-theme li::before {
 }
 
 div.heaven-theme blockquote {
-  @apply py-2 my-2 border-l-(--secondary) border-l-8;
+  @apply py-2 lg:py-4 my-4 border-l-(--secondary) border-l-8;
   background-color: var(--bg-darker);
 }
