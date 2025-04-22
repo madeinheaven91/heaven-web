@@ -68,3 +68,9 @@ div.heaven-theme figure {
 div.heaven-theme figure > * {
     margin-inline: auto;
 }
+
+div.heaven-theme img {
+    margin-block: 2rem;
+    margin-inline: auto;
+    display: block;
+}

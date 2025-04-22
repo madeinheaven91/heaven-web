@@ -43,7 +43,7 @@ onMounted(async () => {
                 <p class="my-0 text-xs italic lg:text-base" v-if="post.updated_at">Обновлено: {{
                     DateLib.toLocale(post.updated_at) }}</p>
                 <hr>
-                <MdPreview v-model="post.body" language='en-US' preview-theme="heaven" class="lg:text-lg" />
+                <MdPreview v-model="post.body" language='en-US' preview-theme="heaven" code-theme="hacker" class="lg:text-lg" />
                 <hr class="mt-5">
                 <div class="my-5 flex gap-3 text-xl lg:text-2xl">
                     <Button @click="router.push('/blog')">Назад</Button>
@@ -83,6 +83,7 @@ onMounted(async () => {
 main {
     flex: 1;
 }
+
 .md-editor-previewOnly {
     background-color: transparent;
 }
