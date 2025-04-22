@@ -59,3 +59,12 @@ div.heaven-theme blockquote {
   @apply py-2 lg:py-4 my-4 border-l-(--secondary) border-l-8;
   background-color: var(--bg-darker);
 }
+
+div.heaven-theme figure {
+    margin-block: 2rem;
+    margin-inline: auto;
+    display: block;
+}
+div.heaven-theme figure > * {
+    margin-inline: auto;
+}
