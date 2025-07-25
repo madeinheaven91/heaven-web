@@ -4,6 +4,7 @@ div.heaven-theme * {
 
 div.heaven-theme {
   background-color: transparent;
+  font-family: var(--main-font);
 }
 
 div.heaven-theme :is(p, h1, h2, h3, h4, h5, h6, li) {
@@ -65,19 +66,29 @@ div.heaven-theme figure {
   margin-inline: auto;
   display: block;
 }
+
 div.heaven-theme figure > * {
   margin-inline: auto;
-  color: var(--yellow);
 }
 
 div.heaven-theme img {
   max-height: 90vh;
   max-width: 90vw;
-  margin-block: 2rem;
-  margin-inline: auto;
   display: block;
+}
+
+div.heaven-theme figure > figcaption {
+  margin-top: 1rem;
+  display: block;
+  color: var(--yellow);
 }
 
 div.heaven-theme code {
   color: var(--highlight);
+}
+
+div.heaven-theme hr {
+  margin: 1rem 0;
+  background-color: var(--main);
+  border-width: 0;
 }
