@@ -72,6 +72,7 @@ div.heaven-theme figure > * {
 }
 
 div.heaven-theme img {
+  margin-top: 2rem;
   max-height: 90vh;
   max-width: 90vw;
   display: block;
