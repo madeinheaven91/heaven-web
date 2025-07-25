@@ -10,45 +10,45 @@ div.heaven-theme :is(p, h1, h2, h3, h4, h5, h6, li) {
   color: var(--main);
   font-family: var(--main-font);
   word-break: break-word;
-  @apply lg:text-xl text-lg
+  @apply lg:text-xl text-lg;
 }
 
 div.heaven-theme p {
-    @apply mt-3 text-lg/tight lg:text-xl/tight
+  @apply mt-3 text-lg/tight lg:text-xl/tight;
 }
 div.heaven-theme p:first-child {
-    @apply mt-0
+  @apply mt-0;
 }
 
 div.heaven-theme h1 {
-  @apply mt-5 mb-0 text-4xl lg:text-5xl
+  @apply mt-5 mb-0 text-4xl lg:text-5xl;
 }
 
 div.heaven-theme h2 {
-  @apply mt-5 mb-0 text-3xl lg:text-4xl
+  @apply mt-5 mb-0 text-3xl lg:text-4xl;
 }
 div.heaven-theme h3 {
-  @apply mt-5 mb-0 text-2xl lg:text-3xl
+  @apply mt-5 mb-0 text-2xl lg:text-3xl;
 }
 div.heaven-theme h4 {
-  @apply mt-5 mb-0 text-xl lg:text-2xl
+  @apply mt-5 mb-0 text-xl lg:text-2xl;
 }
 
-div.heaven-theme a{
+div.heaven-theme a {
   text-shadow: 0px 0px 5px var(--secondary);
   color: var(--secondary);
   text-decoration: underline;
   transition: 0.2s;
 }
 
-div.heaven-theme a:hover{
+div.heaven-theme a:hover {
   cursor: pointer;
   text-shadow: 0px 0px 15px var(--highlight);
   color: var(--highlight);
 }
 
 div.heaven-theme ul {
-  @apply pl-3
+  @apply pl-3;
 }
 
 div.heaven-theme li::before {
@@ -61,16 +61,23 @@ div.heaven-theme blockquote {
 }
 
 div.heaven-theme figure {
-    margin-block: 2rem;
-    margin-inline: auto;
-    display: block;
+  margin-block: 2rem;
+  margin-inline: auto;
+  display: block;
 }
 div.heaven-theme figure > * {
-    margin-inline: auto;
+  margin-inline: auto;
+  color: var(--yellow);
 }
 
 div.heaven-theme img {
-    margin-block: 2rem;
-    margin-inline: auto;
-    display: block;
+  max-height: 90vh;
+  max-width: 90vw;
+  margin-block: 2rem;
+  margin-inline: auto;
+  display: block;
+}
+
+div.heaven-theme code {
+  color: var(--highlight);
 }

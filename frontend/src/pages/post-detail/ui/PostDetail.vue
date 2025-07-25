@@ -46,10 +46,10 @@ onMounted(async () => {
                 <MdPreview v-model="post.body" language='en-US' preview-theme="heaven" code-theme="hacker" class="lg:text-lg" />
                 <hr class="mt-5">
                 <div class="my-5 flex gap-3 text-xl lg:text-2xl">
-                    <Button @click="router.push('/blog')">Назад</Button>
+                    <Button @click="router.push('/')">Назад</Button>
                     <template v-if="user">
                         <Button v-if="(user as User).id == post.author.id">
-                            <RouterLink class="edit" :to="`/blog/post/${props.slug}/edit`">Редактировать</RouterLink>
+                            <RouterLink class="edit" :to="`/post/${props.slug}/edit`">Редактировать</RouterLink>
                         </Button>
                         <DeleteButton v-if="(user as User).id == post.author.id || (user as User).is_staff"
                             :slug="slug" />

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Header from '@/widgets/header'
-import PostList from '@/widgets/post-list'
-import TagList from '@/widgets/tag-list'
-import { type Post, PostApi } from '@/entities/post'
-import { type Tag, TagApi } from '@/entities/tag'
-import { onMounted, ref } from 'vue'
+import Header from "@/widgets/header";
+import PostList from "@/widgets/post-list";
+import TagList from "@/widgets/tag-list";
+import { type Post, PostApi } from "@/entities/post";
+import { type Tag, TagApi } from "@/entities/tag";
+import { onMounted, ref } from "vue";
 
 const posts = ref<Post[]>([]);
 const tags = ref<Tag[]>([]);
@@ -17,18 +17,18 @@ onMounted(async () => {
     return ts2 - ts1;
   });
   tags.value = await TagApi.fetch_tags();
-})
+});
 </script>
 
 <template>
   <Header />
   <main class="px-5 lg:px-[5rem]">
-    <h3 class='glow lg:px-5 mt-3 text-4xl'>Посты</h3>
+    <h3 class="glow lg:px-5 mt-3 text-4xl">Посты</h3>
     <!-- <p><i class="nf nf-linux-archlinux"></i> ~/rust > <BlinkingCursor/></p> -->
-    <hr>
-    <h4 class='glow lg:px-5 text-3xl'>Теги</h4>
-    <TagList class='lg:px-5' :tags="tags" clickable />
-    <hr>
+    <hr />
+    <h4 class="glow lg:px-5 text-3xl">Теги</h4>
+    <TagList class="lg:px-5" :tags="tags" clickable />
+    <hr />
     <PostList :posts="posts" />
   </main>
 </template>

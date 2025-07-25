@@ -1,19 +1,18 @@
 @import "tailwindcss";
 @import "./markdown";
 
-
 @theme {
-  --font-display: "Ubuntu Mono"
+  --font-display: "Ubuntu Mono";
 }
 
-@layer base{
+@layer base {
   @font-face {
     font-family: "NerdFontsSymbols Nerd Font";
     font-style: normal;
     font-weight: 400;
     src: url("./fonts/SymbolsNerdFontMono-Regular.ttf");
   }
-  :root{
+  :root {
     /* --bg: #211f1a; */
     --bg: #171614;
     --bg-darker: #121110;
@@ -32,7 +31,7 @@
     --f-3xl: 2.75rem;
     --f-4xl: 3.2rem;
 
-    --main-font: "Ubuntu Mono"
+    --main-font: "Ubuntu Mono";
   }
 
   body {
@@ -41,11 +40,11 @@
     color: var(--main);
   }
 
-  hr{
+  hr {
     margin: 0.5rem 0;
   }
 
-  *:focus{
+  *:focus {
     outline-style: solid;
     outline-width: 1px;
     outline-color: var(--yellow);
@@ -61,48 +60,48 @@
   .glow-box {
     box-shadow: 0px 0px 7px 1px var(--main);
   }
-
 }
 
 @layer utilities {
-  a{
+  a {
     text-shadow: 0px 0px 5px var(--secondary);
     color: var(--secondary);
     text-decoration: underline;
     transition: 0.2s;
   }
-a:hover{
+  a:hover {
     cursor: pointer;
     text-shadow: 0px 0px 15px var(--highlight);
     color: var(--highlight);
   }
 
-  .c-main{
+  .c-main {
     color: var(--main);
   }
 
-  .c-secondary{
+  .c-secondary {
     color: var(--secondary);
   }
 
-  .c-highlight{
+  .c-highlight {
     color: var(--highlight);
   }
 
-  .c-yellow{
+  .c-yellow {
     color: var(--yellow);
   }
 
-  .c-red{
+  .c-red {
     color: var(--red);
   }
 
-  .c-blue{
+  .c-blue {
     color: var(--blue);
   }
 
   /* https://isotropic.co/tool/hex-color-to-css-filter/ */
   .filter-main {
-    filter: invert(100%) sepia(47%) saturate(2438%) hue-rotate(18deg) brightness(96%) contrast(92%);
+    filter: invert(100%) sepia(47%) saturate(2438%) hue-rotate(18deg)
+      brightness(96%) contrast(92%);
   }
 }

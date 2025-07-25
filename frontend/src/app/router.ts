@@ -1,23 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from '@/pages/home'
-import PostDetail from "@/pages/post-detail"
-import Editor from "@/pages/editor"
-import Drafts from "@/pages/drafts"
+import BlogHome from "@/pages/blog-home";
+import PostDetail from "@/pages/post-detail";
+import Editor from "@/pages/editor";
+import Drafts from "@/pages/drafts";
 
 const routes = [
-  { path: "/", redirect: "/blog", },
-  { path: "/blog", component: Home, },
-  { path: "/blog/new", component: Editor, },
-  { path: "/blog/drafts", component: Drafts, },
   {
-    path: "/blog/post/:slug",
+    path: "/",
+    component: BlogHome,
+  },
+  { path: "/new", component: Editor },
+  { path: "/drafts", component: Drafts },
+  {
+    path: "/post/:slug",
     component: PostDetail,
-    props: true
+    props: true,
   },
   {
-    path: "/blog/post/:slug/edit",
+    path: "/post/:slug/edit",
     component: Editor,
-    props: true
+    props: true,
   },
   // { path: '/:pathMatch(.*)*', component: NotFound, }
 ];
