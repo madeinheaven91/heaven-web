@@ -81,6 +81,7 @@ div.heaven-theme figure > figcaption {
   margin-top: 1rem;
   display: block;
   color: var(--yellow);
+  word-break: break-word;
 }
 
 div.heaven-theme code {
