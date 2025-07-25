@@ -50,10 +50,10 @@ onUnmounted(() => {
         <!-- ROUTER -->
         <div v-if="isAuthenticated && user" class="list">
             <Button>
-                <RouterLink to='/drafts'>Черновики</RouterLink>
+                <RouterLink to='/blog/drafts'>Черновики</RouterLink>
             </Button>
             <Button>
-                <RouterLink to='/new'>Новый пост</RouterLink>
+                <RouterLink to='/blog/new'>Новый пост</RouterLink>
             </Button>
             <Button @click="store.logout">Выход</Button>
             <p class="c-yellow">{{ user.name }}</p>

@@ -52,7 +52,7 @@ const savePost = async () => {
       });
       const slug = response.data.slug;
 
-      router.push(`/post/${slug}`)
+      router.push(`/blog/post/${slug}`)
       alert("SUCCESS");
     } catch (error) {
       console.log(error);
@@ -81,7 +81,7 @@ onMounted(async () => {
       <MdEditor v-model="body" language="en-US" />
       <div class="mt-3 flex gap-2">
         <Button @click="savePost">Сохранить</Button>
-        <Button @click="router.push('/')">Назад</Button>
+        <Button @click="router.push('/blog')">Назад</Button>
       </div>
     </div>
     <div v-else>

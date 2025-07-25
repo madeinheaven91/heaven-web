@@ -14,7 +14,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <a href="/">
+  <a href="/blog">
     {{ title }}
   </a>
 </template>

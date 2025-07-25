@@ -20,7 +20,7 @@ function onPublish(slug: string) {
     try {
         PostApi.publish(slug);
         alert("SUCCESS");
-        window.location.replace(`/post/${slug}`);
+        window.location.replace(`/blog/post/${slug}`);
     } catch (error) {
         console.log(error);
     }
@@ -41,7 +41,7 @@ onMounted(() => {
     <div class="flex flex-col justify-between py-2 px-2 mb-3 border-2 lg:hidden">
         <div>
             <span class="flex flex-col">
-                <RouterLink class="title text-2xl" :to="`/post/${props.post.slug}`">{{ displayTitle }}</RouterLink>
+                <RouterLink class="title text-2xl" :to="`/blog/post/${props.post.slug}`">{{ displayTitle }}</RouterLink>
                 <TagList class="mt-0" :tags="props.post.tags" />
             </span>
         </div>
@@ -54,7 +54,7 @@ onMounted(() => {
                 <Button v-if="(user as User).id == props.post.author.id && !props.post.is_published"
                     @click="onPublish(props.post.slug)">Опубликовать</Button>
                 <Button v-if="(user as User).id == props.post.author.id">
-                    <RouterLink class="edit" :to="`/post/${props.post.slug}/edit`">Редактировать</RouterLink>
+                    <RouterLink class="edit" :to="`/blog/post/${props.post.slug}/edit`">Редактировать</RouterLink>
                 </Button>
                 <DeleteButton v-if="(user as User).id == props.post.author.id || (user as User).is_staff"
                     :slug="props.post.slug" />
@@ -65,7 +65,7 @@ onMounted(() => {
     <div class="justify-between py-2 px-5 mb-3 border-2 text-2xl hidden lg:flex">
         <div>
             <span class="flex flex-row gap-5 items-center">
-                <RouterLink class="title text-4xl" :to="`/post/${props.post.slug}`">{{ displayTitle }}</RouterLink>
+                <RouterLink class="title text-4xl" :to="`/blog/post/${props.post.slug}`">{{ displayTitle }}</RouterLink>
                 <TagList class="mt-0" :tags="props.post.tags" />
             </span>
             <p>{{ props.post.author.name }}</p>
@@ -76,7 +76,7 @@ onMounted(() => {
                 <Button v-if="(user as User).id == props.post.author.id && !props.post.is_published"
                     @click="onPublish(props.post.slug)">Опубликовать</Button>
                 <Button v-if="(user as User).id == props.post.author.id">
-                    <RouterLink class="edit" :to="`/post/${props.post.slug}/edit`">Редактировать</RouterLink>
+                    <RouterLink class="edit" :to="`/blog/post/${props.post.slug}/edit`">Редактировать</RouterLink>
                 </Button>
                 <DeleteButton v-if="(user as User).id == props.post.author.id || (user as User).is_staff"
                     :slug="props.post.slug" />

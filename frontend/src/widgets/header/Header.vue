@@ -20,7 +20,7 @@ const sidebarIsOpen = ref(false)
     <!-- MOBILE -->
     <header class="block lg:hidden">
         <div class="flex justify-between items-center px-5 pt-2">
-            <RouterLink to='/'>
+            <RouterLink to='/blog'>
                 <Logo />
             </RouterLink>
             <Sidebar v-if="sidebarIsOpen" @toggleOpen="sidebarIsOpen = false" />
@@ -34,15 +34,15 @@ const sidebarIsOpen = ref(false)
     <header class="hidden lg:block">
         <div class="px-20 items-center list text-lg">
             <!-- ROUTER -->
-            <RouterLink to='/'>
+            <RouterLink to='/blog'>
                 <Logo />
             </RouterLink>
             <div v-if="isAuthenticated && user" class="ml-3 list">
                 <Button>
-                    <RouterLink to='/drafts'>Черновики</RouterLink>
+                    <RouterLink to='/blog/drafts'>Черновики</RouterLink>
                 </Button>
                 <Button>
-                    <RouterLink to='/new'>Новый пост</RouterLink>
+                    <RouterLink to='/blog/new'>Новый пост</RouterLink>
                 </Button>
                 <Button @click="store.logout">Выход</Button>
                 <p class="mb-[2px] c-yellow">{{ user.name }}</p>
