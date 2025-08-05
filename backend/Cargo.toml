@@ -24,9 +24,9 @@ futures-util = "0.3.31"
 jsonwebtoken = "9.3.1"
 lazy_static = "1.5.0"
 log = "0.4.26"
-serde = {version = "1.0.218", features = ["derive"]}
+serde = { version = "1.0.218", features = ["derive"] }
 serde_json = "1.0.139"
 slug = "0.1.6"
 schemars = { package = "apistos-schemars", version = "0.8" }
-apistos = { version = "0.4.2", features = ["swagger-ui"] }
-rand = "0.9.0"
+apistos = { version = "0.6.0", features = ["swagger-ui"] }
+rand = { version = "0.9.0", features = ["os_rng"] }

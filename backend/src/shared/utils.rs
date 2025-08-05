@@ -1,13 +1,12 @@
 use actix::{Addr, Handler, Message};
 use actix_web::{HttpRequest, HttpResponse, http::header};
 use argon2::{
-    Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
-    password_hash::{self, SaltString, rand_core::OsRng},
+    password_hash::{self, SaltString}, Argon2, PasswordHash, PasswordHasher, PasswordVerifier
 };
 use chrono::{Duration, Utc};
 use diesel::result::Error::NotFound;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
-use rand::{random_bool, random_range};
+use rand::{random_bool, random_range, rngs::StdRng, RngCore, SeedableRng};
 use serde::{Deserialize, Serialize};
 
 use crate::db::DbActor;
@@ -16,7 +15,6 @@ use super::{
     errors::APIError,
     statics::{CONFIG, LEXICON},
 };
-
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -49,7 +47,13 @@ pub fn verify_jwt(token: &str) -> Result<TokenData<Claims>, jsonwebtoken::errors
 }
 
 pub fn hash_password(password: &str) -> Result<String, password_hash::Error> {
-    let salt = SaltString::generate(&mut OsRng);
+    // FIXME: for some reason neither &mut OsRng or &mut StdRng::from_os_rng()
+    // implement CryptoRng and CryptoRngCore, so i just copied the code 
+    // from argon2 source
+    let mut bytes = [0u8; 16];
+    StdRng::from_os_rng().fill_bytes(&mut bytes);
+    let salt = SaltString::encode_b64(&bytes).expect("salt string invariant violated");
+    // let salt = SaltString::generate(&mut OsRng);
     let hashed_password = Argon2::default()
         .hash_password(password.as_bytes(), &salt)?
         .to_string();
@@ -121,12 +125,11 @@ pub async fn get_claims_by_auth(req: HttpRequest) -> Result<Claims, APIError> {
 pub fn random_string(len: i32) -> String {
     (0..len).fold(String::new(), |acc, _| {
         let mut char = char::from(random_range(97..122)).to_string();
-        char = if random_bool(0.5){
+        char = if random_bool(0.5) {
             char.to_uppercase()
-        }else {
+        } else {
             char
         };
         acc + &char
-    }
-    )
+    })
 }

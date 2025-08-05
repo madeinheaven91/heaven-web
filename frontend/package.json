@@ -9,20 +9,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.0.15",
-    "@types/node": "^22.13.11",
-    "axios": "^1.8.4",
-    "md-editor-v3": "^5.4.5",
-    "pinia": "^3.0.1",
-    "tailwindcss": "^4.0.15",
-    "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/node": "^22.17.0",
+    "axios": "^1.11.0",
+    "md-editor-v3": "^5.8.4",
+    "pinia": "^3.0.3",
+    "tailwindcss": "^4.1.11",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/tsconfig": "^0.7.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0",
-    "vue-tsc": "^2.2.4"
+    "typescript": "~5.7.3",
+    "vite": "^6.3.5",
+    "vue-tsc": "^2.2.12"
   }
 }

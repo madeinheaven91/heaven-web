@@ -3,7 +3,7 @@
 #
 # Use official rust image to for application build
 # ---------------------------------------------------
-FROM rust:1.85-slim as build
+FROM rust:1.88-slim as build
 
 RUN apt-get update && \
   apt-get -y upgrade && \
